@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>نظام العمليات - إصلاح الاستعادة</title>
+    <title>نظام العمليات - النسخة المعتمدة</title>
     <style>
         :root { --red: #b32633; --gold: #ffd700; --bg: #0a0a0a; --glass: rgba(255,255,255,0.1); }
         body { font-family: 'Segoe UI', sans-serif; background: #111 url('https://i.top4top.io/p_3592jzcr01.jpg') no-repeat center center fixed; background-size: cover; color: white; margin: 0; padding: 10px; padding-bottom: 120px; }
@@ -54,7 +54,7 @@
             <button onclick="setZone('lous')" id="z-lous" class="btn-ui active">لوس سانتوس</button>
             <button onclick="setZone('sandy')" id="z-sandy" class="btn-ui">ساندي وبوليتو</button>
             <button onclick="rescheduleField()" class="btn-ui" style="background:#1e4d2b">🔀 جدولة الميدان</button>
-            <button onclick="restoreData()" class="btn-ui" style="color:var(--gold); border-color: var(--gold);">🔄 استعادة البيانات</button>
+            <button onclick="restoreFromStorage()" class="btn-ui" style="color:var(--gold); border-color: var(--gold);">🔄 استعادة البيانات</button>
             <button onclick="resetAll()" class="btn-ui" style="background:#600">⚠️ حذف الكل</button>
         </div>
 
@@ -120,7 +120,7 @@
     let currentZone = 'lous';
     let activeLetter = 'E';
     let data = {};
-    const STORAGE_KEY = 'ems_system_main_data';
+    const STORAGE_KEY = 'ems_global_data_v2';
     let reportNum = localStorage.getItem('ems_rep_num') || "1";
 
     const configs = {
@@ -153,7 +153,22 @@
         data = {};
         let allKeys = new Set([...configs.lous.reportOrder, ...configs.sandy.reportOrder]);
         allKeys.forEach(k => data[k] = []);
-        save();
+        saveToStorage();
+    }
+
+    function saveToStorage() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function restoreFromStorage() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if(saved) {
+            data = JSON.parse(saved);
+            render();
+            alert("✅ تم استعادة البيانات من الذاكرة بنجاح");
+        } else {
+            alert("❌ لا توجد بيانات محفوظة");
+        }
     }
 
     function updateClock() {
@@ -178,10 +193,15 @@
         let isSingle = document.getElementById('singleMode').checked;
         
         let ops = config.main.slice(0, 2).find(u => data[u.n].length < 1);
-        if (ops) { data[ops.n].push(code); render(); save(); return; }
+        if (ops) { data[ops.n].push(code); render(); saveToStorage(); return; }
 
         let fieldUnits = config.distOrder.map(name => config.main.find(u => u.n === name));
-        let target = isSingle ? fieldUnits.find(u => data[u.n].length === 0) : fieldUnits.find(u => data[u.n].length < u.c);
+        let target;
+        if (isSingle) {
+            target = fieldUnits.find(u => data[u.n].length === 0);
+        } else {
+            target = fieldUnits.find(u => data[u.n].length < u.c);
+        }
 
         if (!target) {
             let mins = Math.min(...config.breakOrder.map(n => data[n].length));
@@ -189,7 +209,7 @@
             target = {n: name};
         }
         data[target.n].push(code);
-        render(); save();
+        render(); saveToStorage();
     }
 
     function render() {
@@ -216,31 +236,18 @@
         return r;
     }
 
-    function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
-    
-    function restoreData() {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if(saved) {
-            data = JSON.parse(saved);
-            render();
-            alert("✅ تم استعادة البيانات بنجاح");
-        } else {
-            alert("❌ لا توجد بيانات محفوظة لاستعادتها");
-        }
-    }
-
     function openPreview() { document.getElementById('reportText').innerText = generateReport(); document.getElementById('reportModal').style.display = 'block'; }
-    function copyDirect() { navigator.clipboard.writeText(generateReport()).then(() => alert("✅ تم النسخ بنجاح")); }
+    function copyDirect() { navigator.clipboard.writeText(generateReport()).then(() => alert("✅ تم النسخ")); }
     function copyFromModal() { copyDirect(); closeModal(); }
     function closeModal() { document.getElementById('reportModal').style.display = 'none'; }
-    function del(n, i) { data[n].splice(i, 1); render(); save(); }
-    function move(f, t, i) { data[t].push(data[f].splice(i, 1)[0]); render(); save(); }
+    function del(n, i) { data[n].splice(i, 1); render(); saveToStorage(); }
+    function move(f, t, i) { data[t].push(data[f].splice(i, 1)[0]); render(); saveToStorage(); }
     function setZone(z) { currentZone = z; document.querySelectorAll('#z-lous, #z-sandy').forEach(b => b.classList.toggle('active', b.id === 'z-'+z)); render(); }
     function selLet(l) { activeLetter = l; document.querySelectorAll('.let-btn').forEach(b => b.classList.toggle('active', b.innerText === l)); }
     function updatePlaceholder() { document.getElementById('mainInput').placeholder = document.getElementById('digitMode').checked ? "0000" : "000"; }
-    function changeReportNum() { let n = prompt("رقم التقرير:", reportNum); if(n){ reportNum=n; document.getElementById('reportDisplay').innerText=n; localStorage.setItem('ems_rep_num', n); } }
-    function resetAll() { if(confirm("⚠️ هل أنت متأكد من حذف كافة البيانات؟")){ resetDataStructure(); render(); } }
-    function manualAdd(t) { let n = prompt("ادخل الرقم (بدون حرف):"); if(n){ data[t].push("\u202D" + activeLetter + "-" + n + "\u202C"); render(); save(); } }
+    function changeReportNum() { let n = prompt("رقم التقرير:", reportNum); if(n){ reportNum=n; document.getElementById('reportDisplay').innerText=n; localStorage.setItem('ems_rep_num', n); saveToStorage(); } }
+    function resetAll() { if(confirm("⚠️ حذف الكل؟")){ resetDataStructure(); render(); } }
+    function manualAdd(t) { let n = prompt("الكود:"); if(n){ data[t].push("\u202D" + activeLetter + "-" + n + "\u202C"); render(); saveToStorage(); } }
     function rescheduleField() {
         let codes = [];
         configs[currentZone].distOrder.forEach(name => { codes = codes.concat(data[name]); data[name] = []; });
