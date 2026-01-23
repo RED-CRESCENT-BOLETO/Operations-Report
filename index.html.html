@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>نظام العمليات المتكامل - النسخة النهائية</title>
+    <style>
+        :root { 
+            --red: #b32633; 
+            --gold: #ffd700; 
+            --bg: #0a0a0a; 
+            --glass: rgba(255,255,255,0.08); 
+        }
+        
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: #111 url('https://i.top4top.io/p_3592jzcr01.jpg') no-repeat center center fixed; 
+            background-size: cover; 
+            color: white; 
+            margin: 0; 
+            padding: 15px; 
+        }
+
+        .overlay { 
+            background: rgba(0,0,0,0.85); 
+            min-height: 100vh; 
+            padding: 20px; 
+            border-radius: 15px; 
+        }
+
+        .info-bar { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: var(--bg); 
+            padding: 12px; 
+            border-bottom: 3px solid var(--red); 
+            border-radius: 10px; 
+            margin-bottom: 20px; 
+        }
+
+        .main-controls { 
+            background: rgba(0,0,0,0.7); 
+            padding: 20px; 
+            border-radius: 15px; 
+            text-align: center; 
+            margin-bottom: 25px; 
+            border: 1px solid #333; 
+        }
+
+        .letter-group { 
+            display: flex; 
+            justify-content: center; 
+            gap: 6px; 
+            margin-bottom: 15px; 
+            flex-wrap: wrap; 
+        }
+
+        .let-btn { 
+            width: 42px; 
+            height: 42px; 
+            border: 2px solid #444; 
+            background: #222; 
+            color: white; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+        }
+
+        .let-btn.active { 
+            background: var(--red); 
+            border-color: white; 
+            transform: scale(1.1); 
+            box-shadow: 0 0 8px var(--red); 
+        }
+
+        .input-area { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 15px; 
+            margin: 20px 0; 
+        }
+
+        #mainInput { 
+            font-size: 40px; 
+            width: 180px; 
+            text-align: center; 
+            background: #000; 
+            color: var(--red); 
+            border: 2px solid #555; 
+            border-radius: 12px; 
+            padding: 10px; 
+            font-weight: bold; 
+            outline: none; 
+        }
+
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); 
+            gap: 15px; 
+            margin-bottom: 30px; 
+        }
+
+        .card { 
+            background: var(--glass); 
+            border: 1px solid #444; 
+            border-radius: 12px; 
+            min-height: 110px; 
+            display: flex; 
+            flex-direction: column; 
+            transition: 0.3s;
+        }
+
+        .card:hover { border-color: var(--red); }
+
+        .card-header { 
+            background: var(--red); 
+            padding: 6px; 
+            text-align: center; 
+            font-size: 14px; 
+            font-weight: bold; 
+            border-radius: 10px 10px 0 0; 
+        }
+
+        .card-body { 
+            padding: 10px; 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 6px; 
+            justify-content: center; 
+        }
+
+        .tag { 
+            background: #000; 
+            border: 1px solid var(--red); 
+            padding: 4px 10px; 
+            border-radius: 6px; 
+            position: relative; 
+            cursor: pointer; 
+            font-weight: bold; 
+        }
+
+        .tag-menu { 
+            display: none; 
+            position: absolute; 
+            top: 100%; 
+            left: 0; 
+            background: #222; 
+            z-index: 100; 
+            border: 1px solid #555; 
+            width: 120px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .tag:hover .tag-menu { display: block; }
+
+        .tag-menu div { 
+            padding: 8px; 
+            font-size: 12px; 
+            border-bottom: 1px solid #333; 
+            text-align: right; 
+        }
+
+        .tag-menu div:hover { background: var(--red); }
+
+        .btn-ui { 
+            padding: 8px 15px; 
+            cursor: pointer; 
+            border-radius: 6px; 
+            background: #222; 
+            color: white; 
+            border: 1px solid #444; 
+            font-weight: bold; 
+        }
+
+        .btn-ui.active { background: var(--red); }
+
+        .mode-toggle { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 10px; 
+            background: #1a1a1a; 
+            border: 1px solid var(--gold); 
+            border-radius: 10px; 
+            min-width: 120px; 
+        }
+
+        .switch { 
+            position: relative; 
+            display: inline-block; 
+            width: 40px; 
+            height: 20px; 
+            margin-top: 5px; 
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider { 
+            position: absolute; 
+            cursor: pointer; 
+            top: 0; left: 0; right: 0; bottom: 0; 
+            background-color: #444; 
+            transition: .4s; 
+            border-radius: 20px; 
+        }
+
+        .slider:before { 
+            position: absolute; 
+            content: ""; 
+            height: 14px; 
+            width: 14px; 
+            left: 3px; 
+            bottom: 3px; 
+            background-color: white; 
+            transition: .4s; 
+            border-radius: 50%; 
+        }
+
+        input:checked + .slider { background-color: var(--gold); }
+        input:checked + .slider:before { transform: translateX(20px); }
+        
+        h3 { border-right: 4px solid var(--red); padding-right: 10px; margin-top: 30px; }
+    </style>
+</head>
+<body>
+
+<div class="overlay">
+    <div class="info-bar">
+        <div>رقم التقرير: <button class="btn-ui" id="reportDisplay" onclick="changeReportNum()" style="color:var(--gold)">1001</button></div>
+        <div id="clock">00:00:00</div>
+        <div style="background:var(--red); padding:5px 15px; border-radius:5px; font-weight: bold;">نظام العمليات المتكامل v10</div>
+    </div>
+
+    <div class="main-controls">
+        <div style="display:flex; justify-content:center; gap:10px; margin-bottom:15px; flex-wrap: wrap;">
+            <button onclick="setZone('lous')" id="z-lous" class="btn-ui active">لوس سانتوس</button>
+            <button onclick="setZone('sandy')" id="z-sandy" class="btn-ui">ساندي وبوليتو</button>
+            <button onclick="rescheduleFieldOnly()" class="btn-ui" style="background:#1e4d2b;">🔀 إعادة جدولة</button>
+            <button onclick="restore()" class="btn-ui" style="color:var(--gold)">🔄 استعادة البيانات</button>
+            <button onclick="resetSystem()" class="btn-ui" style="background: #600;">⚠️ حذف الكل</button>
+        </div>
+
+        <div style="display:flex; justify-content:center; gap:20px; align-items: center; margin-bottom: 15px; flex-wrap: wrap;">
+            <div class="mode-toggle">
+                <span style="font-size: 11px; color: var(--gold); font-weight: bold;">توزيع فردي للميدان</span>
+                <label class="switch">
+                    <input type="checkbox" id="singleMode">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="letter-group" style="margin-bottom: 0;">
+                <button class="let-btn active" onclick="selLet('E')">E</button>
+                <button class="let-btn" onclick="selLet('A')">A</button>
+                <button class="let-btn" onclick="selLet('F')">F</button>
+                <button class="let-btn" onclick="selLet('M')">M</button>
+                <button class="let-btn" onclick="selLet('S')">S</button>
+                <button class="let-btn" onclick="selLet('C')">C</button>
+                <button class="let-btn" onclick="selLet('G')">G</button>
+                <button class="let-btn" onclick="selLet('P')">P</button>
+                <button class="let-btn" onclick="selLet('H')">H</button>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="mainInput" placeholder="000" maxlength="4" oninput="handleAutoInput(this)">
+            <div style="text-align: center; background: #222; padding: 5px; border-radius: 5px;">
+                <span style="font-size:10px;">4 أرقام</span><br>
+                <input type="checkbox" id="modeSwitch" onchange="updatePlaceholder()">
+            </div>
+        </div>
+        
+        <div style="display:flex; gap:10px; justify-content:center; flex-wrap: wrap;">
+            <button class="btn-ui" onclick="promptManual('القيادة')">➕ قيادة</button>
+            <button class="btn-ui" onclick="promptManual('الإشراف العام')">➕ إشراف</button>
+            <button class="btn-ui" onclick="promptManual('مشرف ميداني')">➕ مشرف ميدان</button>
+            <button class="btn-ui" onclick="promptManual('الميناء')">➕ ميناء</button>
+            <button class="btn-ui" onclick="promptManual('بحث وإنقاذ')">➕ بحث</button>
+            <button class="btn-ui" onclick="promptManual('الدعم الفني')">➕ دعم</button>
+        </div>
+    </div>
+
+    <h3 id="sectionMainText">الميدان والعمليات (لوس سانتوس)</h3>
+    <div class="grid" id="mainGrid"></div>
+
+    <h3 style="color:var(--gold)">الإدارة والقيادة</h3>
+    <div class="grid" id="leadGrid"></div>
+
+    <h3 style="color:#888">تسجيل الخروج</h3>
+    <div class="grid" id="exitGrid"></div>
+</div>
+
+<script>
+    let currentZone = 'lous';
+    let activeLetter = 'E';
+    let data = {};
+    let reportNum = localStorage.getItem('ems_rep_num') || "1001";
+
+    const configs = {
+        lous: {
+            main: [
+                { name: "العمليات", cap: 1 }, { name: "نائب العمليات", cap: 1 },
+                { name: "لام 2", cap: 3 }, { name: "لام 4", cap: 3 }, { name: "لام 3", cap: 2 },
+                { name: "لام 1", cap: 3 }, { name: "فرسان", cap: 1 }, { name: "لام 5", cap: 1 }
+            ],
+            breakOrder: ["لام 2", "لام 4", "لام 3", "لام 1", "لام 5", "فرسان"]
+        },
+        sandy: {
+            main: [
+                { name: "العمليات", cap: 1 }, { name: "نائب العمليات", cap: 1 },
+                { name: "سين 1", cap: 4 }, { name: "باء 1", cap: 3 }, { name: "سين", cap: 4 },
+                { name: "باء", cap: 4 }, { name: "جيم 1", cap: 3 }, { name: "جيم 2", cap: 3 }
+            ],
+            breakOrder: ["باء 1", "سين 1", "سين", "جيم 1", "باء", "جيم 2"]
+        }
+    };
+
+    const extras = ["القيادة", "الإشراف العام", "مشرف ميداني", "الميناء", "بحث وإنقاذ", "الدعم الفني", "تسجيل الخروج"];
+
+    function init() {
+        document.getElementById('reportDisplay').innerText = reportNum;
+        restoreData();
+        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-GB'); }, 1000);
+    }
+
+    function handleAutoInput(el) {
+        el.value = el.value.replace(/[^0-9]/g, '');
+        let limit = document.getElementById('modeSwitch').checked ? 4 : 3;
+        if (el.value.length === limit) { distribute(activeLetter + el.value); el.value = ''; }
+    }
+
+    function distribute(code) {
+        if (Object.values(data).flat().includes(code)) return;
+        let config = configs[currentZone];
+        let isSingle = document.getElementById('singleMode').checked;
+
+        // 1. فحص العمليات والنائب (ثابت 1 دائماً)
+        let opTarget = config.main.slice(0, 2).find(u => data[u.name].length < 1);
+        if (opTarget) {
+            data[opTarget.name].push(code);
+        } else {
+            // 2. فحص الميدان
+            let fieldOnly = config.main.slice(2);
+            let target;
+            if (isSingle) {
+                target = fieldOnly.find(u => data[u.name].length === 0);
+            } else {
+                target = fieldOnly.find(u => data[u.name].length < u.cap);
+            }
+
+            // 3. نظام الكسر التلقائي
+            if (!target) {
+                let minExtra = Math.min(...config.breakOrder.map(n => data[n].length - config.main.find(u => u.name === n).cap));
+                target = { name: config.breakOrder.find(n => (data[n].length - config.main.find(u => u.name === n).cap) === minExtra) };
+            }
+            data[target.name].push(code);
+        }
+        render(); save();
+    }
+
+    function render() {
+        const build = (n) => `<div class="card"><div class="card-header">${n}</div><div class="card-body">${data[n].map((c, i) => `<div class="tag">${c}<div class="tag-menu"><div onclick="move('${n}','تسجيل الخروج',${i})">➡️ خروج</div><div onclick="del('${n}',${i})">❌ حذف</div></div></div>`).join('')}</div></div>`;
+        
+        let mainList = configs[currentZone].main;
+        document.getElementById('mainGrid').innerHTML = mainList.map(u => build(u.name)).join('');
+        document.getElementById('leadGrid').innerHTML = extras.slice(0, 6).map(e => build(e)).join('');
+        document.getElementById('exitGrid').innerHTML = build("تسجيل الخروج");
+        document.getElementById('sectionMainText').innerText = `الميدان والعمليات (${currentZone==='lous'?'لوس سانتوس':'ساندي وبوليتو'})`;
+    }
+
+    function rescheduleFieldOnly() {
+        let codes = [];
+        let config = configs[currentZone];
+        config.main.slice(2).forEach(u => { codes = codes.concat(data[u.name]); data[u.name] = []; });
+        codes.sort(() => Math.random() - 0.5).forEach(c => distribute(c));
+    }
+
+    function save() { localStorage.setItem('ems_final_v10', JSON.stringify(data)); }
+    function restoreData() {
+        data = JSON.parse(localStorage.getItem('ems_final_v10')) || {};
+        [...configs.lous.main, ...configs.sandy.main, ...extras].forEach(u => { let n = u.name || u; if(!data[n]) data[n] = []; });
+        render();
+    }
+
+    function move(from, to, i) { data[to].push(data[from].splice(i, 1)[0]); render(); save(); }
+    function del(u, i) { data[u].splice(i, 1); render(); save(); }
+    function promptManual(t) { let n = prompt(`كود ${t}:`); if(n) { let c = activeLetter+n; if(!Object.values(data).flat().includes(c)) { data[t].push(c); render(); save(); } } }
+    function setZone(z) { currentZone = z; document.querySelectorAll('.btn-ui').forEach(b => b.classList.remove('active')); document.getElementById('z-'+z).classList.add('active'); render(); }
+    function selLet(l) { activeLetter = l; document.querySelectorAll('.let-btn').forEach(b => b.classList.toggle('active', b.innerText === l)); }
+    function updatePlaceholder() { document.getElementById('mainInput').placeholder = document.getElementById('modeSwitch').checked ? "0000" : "000"; }
+    function changeReportNum() { let n = prompt("رقم التقرير:", reportNum); if(n) { reportNum = n; document.getElementById('reportDisplay').innerText = n; localStorage.setItem('ems_rep_num', n); }}
+    function resetSystem() { if(confirm("هل تريد حذف كافة البيانات وتصفير النظام؟")) { Object.keys(data).forEach(k => data[k] = []); render(); save(); } }
+    function restore() { restoreData(); alert("تمت استعادة البيانات بنجاح"); }
+    
+    init();
+</script>
+</body>
+</html>
