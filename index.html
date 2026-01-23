@@ -85,22 +85,19 @@
         SB: { "القيادة":[], "اشراف عام":[], "مشرف ميداني":[], "العمليات":[], "نائب العمليات":[], "سين 1":[], "باء 1":[], "سين":[], "جيم 1":[], "باء":[], "جيم 2":[], "دعم":[], "الميناء":[], "وحدات البحث و الانقاذ":[], "تسجيل الخروج":[] }
     };
 
-    // --- آلية ساندي وبوليتو (تطبيق حرفي للرسالة) ---
+    function isDuplicate(code) {
+        for (let m in data) {
+            for (let k in data[m]) {
+                if (data[m][k].includes(code)) return true;
+            }
+        }
+        return false;
+    }
+
     function getSBTarget() {
         let d = data.SB;
-        // حساب الوحدات الموجودة في الميدان حالياً لتحديد الخطوة التالية بالضبط
         let total = ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"].reduce((s, k) => s + d[k].length, 0);
-        
-        const path = [
-            "سين 1", "باء 1", "سين", "جيم 1", "باء",             // 1-5: وحدة واحدة لكل صندوق
-            "سين 1", "باء 1", "سين", "جيم 1", "باء",             // 6-10: وحدتين لكل صندوق
-            "سين 1", "باء 1", "سين", "جيم 1",                    // 11-14: 3 وحدات لكل من (سين 1، باء 1، سين، جيم 1)
-            "سين 1", "سين",                                     // 15-16: 4 وحدات لكل من (سين 1، سين)
-            "باء", "باء",                                       // 17-18: باء يصبح 3 ثم 4 وحدات
-            "جيم 2", "جيم 2", "جيم 2"                           // 19-21: جيم 2 (وحدة، وحدتين، 3 وحدات)
-        ];
-        
-        // إذا زاد العدد عن 21، نكرر الأولوية من البداية كما طلبت في نهاية الرسالة
+        const path = ["سين 1", "باء 1", "سين", "جيم 1", "باء", "سين 1", "باء 1", "سين", "جيم 1", "باء", "سين 1", "باء 1", "سين", "جيم 1", "سين 1", "سين", "باء", "باء", "جيم 2", "جيم 2", "جيم 2"];
         if (total >= 21) {
             const loop = ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"];
             return loop[(total - 21) % 6];
@@ -108,7 +105,6 @@
         return path[total];
     }
 
-    // --- آلية لوس سانتوس ---
     function getLSTarget() {
         lsCount++;
         const order = [null, "لام 2", "لام 4", "لام 3", "لام 1", "فرسان", "لام 2", "لام 4", "لام 3", "لام 1", "لام 2", "لام 4", "لام 1", "لام 5"];
@@ -116,17 +112,19 @@
     }
 
     function distribute(code) {
+        if (isDuplicate(code)) return;
         let d = data[mode];
         let target = "";
-        // إجبار ملء العمليات أولاً
         if (d["العمليات"].length < 1) target = "العمليات";
         else if (d["نائب العمليات"].length < 1) target = "نائب العمليات";
         else {
             target = (mode === 'LS') ? getLSTarget() : getSBTarget();
         }
-        d[target].push(code);
-        history.push({mode, target});
-        render();
+        if(target) {
+            d[target].push(code);
+            history.push({mode, target});
+            render();
+        }
     }
 
     function processInput(el) {
@@ -144,7 +142,6 @@
         const d = data[mode];
         const fieldKeys = mode === 'LS' ? ["العمليات", "نائب العمليات", "لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["العمليات", "نائب العمليات", "سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"];
         const adminKeys = ["القيادة", "اشراف عام", "مشرف ميداني", "وحدات البحث و الانقاذ", "الميناء", "دعم"];
-
         const draw = (k) => {
             let cls = ["القيادة","اشراف عام","مشرف ميداني"].includes(k) ? 'card-purple' : (["وحدات البحث و الانقاذ","الميناء","دعم"].includes(k) ? 'card-white' : '');
             let tags = d[k].map((u, i) => `<div class="tag">${u}<div class="tag-menu"><div onclick="toExit('${k}',${i})">➡️ خروج</div><div onclick="del('${k}',${i})">❌ حذف</div></div></div>`).join('');
@@ -159,23 +156,58 @@
     function toExit(k, i) { data[mode]["تسجيل الخروج"].push(data[mode][k].splice(i, 1)[0]); rebalance(); }
     function del(k, i) { data[mode][k].splice(i, 1); rebalance(); }
     function undo() { if(history.length){ let l = history.pop(); data[l.mode][l.target].pop(); if(l.mode === 'LS' && lsCount > 0 && !["العمليات","نائب العمليات"].includes(l.target)) lsCount--; render(); } }
-    
     function rebalance() {
         let fieldKeys = mode === 'LS' ? ["لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"];
         let all = [];
         fieldKeys.forEach(k => { all.push(...data[mode][k]); data[mode][k] = []; });
         if(mode === 'LS') lsCount = 0;
-        all.forEach(u => distribute(u));
+        all.forEach(u => {
+            let target = (mode === 'LS') ? getLSTarget() : getSBTarget();
+            data[mode][target].push(u);
+        });
+        render();
     }
 
     function copyReport() {
-        const order = mode === 'LS' ? ["القيادة","اشراف عام","مشرف ميداني","العمليات","نائب العمليات","لام 1","لام 2","لام 3","لام 4","لام 5","فرسان","دعم","الميناء","وحدات البحث و الانقاذ","تسجيل الخروج"] : ["القيادة","اشراف عام","مشرف ميداني","العمليات","نائب العمليات","سين 1","باء 1","سين","جيم 1","باء","جيم 2","دعم","الميناء","وحدات البحث و الانقاذ","تسجيل الخروج"];
-        let txt = `تقرير عمليات ( ${mode === 'LS' ? 'لوس سانتوس' : 'ساندي وبوليتو'} )\n\n`;
-        order.forEach(k => { txt += `${k} :\n${data[mode][k].length ? data[mode][k].join('\n') : activeLet + '-000'}\n\n`; });
-        navigator.clipboard.writeText(txt); alert("✅ تم النسخ");
+        const now = new Date();
+        const rNum = document.getElementById('repNum').innerText;
+        
+        // الأرقام الإنجليزية للوقت والتاريخ
+        const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+                           .replace('AM', 'ص').replace('PM', 'م');
+        const dateStr = now.toLocaleDateString('en-GB').split('/').reverse().join('/'); // YYYY/MM/DD
+        const days = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+        const dayStr = days[now.getDay()];
+
+        let header = `تم تحديث تقرير عمليات ( ${mode === 'LS' ? 'لوس سانتوس' : 'ساندي و بوليتو'} ) رقم ( ${rNum} ) في تمام الساعه (${timeStr}) في يوم ( ${dayStr} ) التاريخ ${dateStr}\n\n`;
+        let finalTxt = header;
+
+        const order = mode === 'LS' ? 
+            ["القيادة", "اشراف عام", "مشرف ميداني", "العمليات", "نائب العمليات", "لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان", "دعم", "الميناء", "وحدات البحث و الانقاذ", "تسجيل الخروج"] :
+            ["القيادة", "اشراف عام", "مشرف ميداني", "العمليات", "نائب العمليات", "سين 1", "سين", "باء 1", "باء", "جيم 1", "جيم 2", "دعم", "الميناء", "وحدات البحث و الانقاذ", "تسجيل الخروج"];
+
+        order.forEach(k => {
+            let content = data[mode][k].length ? data[mode][k].join('\n') : activeLet + '-000';
+            if(k === "العمليات" || k === "نائب العمليات") {
+                content = data[mode][k].length ? data[mode][k].join(' | ') + " |" : activeLet + '-000 |';
+            }
+            finalTxt += `${k} :\n${content}\n\n`;
+        });
+
+        navigator.clipboard.writeText(finalTxt);
+        alert(`✅ تم نسخ تقرير ${mode === 'LS' ? 'لوس سانتوس' : 'ساندي'} بنجاح`);
     }
 
-    function manual(k) { let n = prompt("الكود:"); if(n){ data[mode][k].push(activeLet+"-"+n); history.push({mode, target:k}); render(); }}
+    function manual(k) { 
+        let n = prompt("الكود:"); 
+        if(n){ 
+            let fullCode = activeLet + "-" + n;
+            if(isDuplicate(fullCode)) return;
+            data[mode][k].push(fullCode); 
+            history.push({mode, target:k}); 
+            render(); 
+        }
+    }
     function toggleDigits() { digits = (digits === 3) ? 4 : 3; document.getElementById('digitBtn').innerText = digits + " أرقام"; }
     function resetSystem() { if(confirm("تصفير؟")) { localStorage.removeItem('ems_v5_final'); location.reload(); }}
     function setMode(m) { mode = m; render(); }
@@ -190,7 +222,7 @@
 
     const saved = JSON.parse(localStorage.getItem('ems_v5_final'));
     if(saved) { data = saved.data; lsCount = saved.lsCount; }
-    setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('ar-SA'); }, 1000);
+    setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', {hour12: false}); }, 1000);
     render();
 </script>
 </body>
