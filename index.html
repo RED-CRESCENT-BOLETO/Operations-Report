@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>نظام EMS المتكامل - النسخة النهائية الصارمة</title>
+    <title>نظام EMS المتكامل - النسخة المستقرة</title>
     <style>
         :root { --red: #b32633; --blue: #0056b3; --gold: #ffd700; --bg: #0a0a0a; --purple: #6a1b9a; --white: #ffffff; }
         body { font-family: 'Segoe UI', sans-serif; background: #111 url('https://i.top4top.io/p_3592jzcr01.jpg') no-repeat center center fixed; background-size: cover; color: white; margin: 0; padding: 10px; padding-bottom: 120px; }
@@ -46,7 +46,7 @@
 
     <div class="main-controls">
         <div style="display:flex; gap:10px;">
-            <button class="btn-side" style="background:#444" onclick="rebalance()">🔄 إعادة جدولة</button>
+            <button class="btn-side" style="background:#444" onclick="rebalanceField()">🔄 إعادة جدولة الميدان</button>
             <button class="btn-side" style="background:#600" onclick="resetSystem()">⚠️ تصفير</button>
         </div>
         <div class="letter-group" id="letterGroup"></div>
@@ -59,6 +59,8 @@
             <button class="btn-side" onclick="manual('القيادة')">➕ قيادة</button>
             <button class="btn-side" onclick="manual('اشراف عام')">➕ اشراف</button>
             <button class="btn-side" onclick="manual('مشرف ميداني')">➕ مشرف</button>
+            <button class="btn-side" onclick="manual('العمليات')">➕ عمليات</button>
+            <button class="btn-side" onclick="manual('نائب العمليات')">➕ نائب</button>
             <button class="btn-side" onclick="manual('وحدات البحث و الانقاذ')">➕ بحث</button>
             <button class="btn-side" onclick="manual('الميناء')">➕ ميناء</button>
             <button class="btn-side" onclick="manual('دعم')">➕ دعم</button>
@@ -96,6 +98,10 @@
 
     function getSBTarget() {
         let d = data.SB;
+        // رجعنا الترتيب يبدأ بالعمليات والنائب
+        if (d["العمليات"].length < 1) return "العمليات";
+        if (d["نائب العمليات"].length < 1) return "نائب العمليات";
+        
         let total = ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"].reduce((s, k) => s + d[k].length, 0);
         const path = ["سين 1", "باء 1", "سين", "جيم 1", "باء", "سين 1", "باء 1", "سين", "جيم 1", "باء", "سين 1", "باء 1", "سين", "جيم 1", "سين 1", "سين", "باء", "باء", "جيم 2", "جيم 2", "جيم 2"];
         if (total >= 21) {
@@ -106,6 +112,9 @@
     }
 
     function getLSTarget() {
+        if (data.LS["العمليات"].length < 1) return "العمليات";
+        if (data.LS["نائب العمليات"].length < 1) return "نائب العمليات";
+
         lsCount++;
         const order = [null, "لام 2", "لام 4", "لام 3", "لام 1", "فرسان", "لام 2", "لام 4", "لام 3", "لام 1", "لام 2", "لام 4", "لام 1", "لام 5"];
         return (lsCount <= 13) ? order[lsCount] : ["لام 2", "لام 4", "لام 3", "لام 1", "لام 5", "فرسان"][(lsCount-14)%6];
@@ -113,15 +122,9 @@
 
     function distribute(code) {
         if (isDuplicate(code)) return;
-        let d = data[mode];
-        let target = "";
-        if (d["العمليات"].length < 1) target = "العمليات";
-        else if (d["نائب العمليات"].length < 1) target = "نائب العمليات";
-        else {
-            target = (mode === 'LS') ? getLSTarget() : getSBTarget();
-        }
+        let target = (mode === 'LS') ? getLSTarget() : getSBTarget();
         if(target) {
-            d[target].push(code);
+            data[mode][target].push(code);
             history.push({mode, target});
             render();
         }
@@ -129,7 +132,8 @@
 
     function processInput(el) {
         el.value = el.value.replace(/[^0-9]/g, '');
-        if (el.value.length >= digits) {
+        let currentLimit = (['M', 'F', 'A', 'S'].includes(activeLet)) ? 2 : digits;
+        if (el.value.length >= currentLimit) {
             distribute(activeLet + "-" + el.value);
             el.value = '';
         }
@@ -153,16 +157,47 @@
         localStorage.setItem('ems_v5_final', JSON.stringify({data, lsCount}));
     }
 
-    function toExit(k, i) { data[mode]["تسجيل الخروج"].push(data[mode][k].splice(i, 1)[0]); rebalance(); }
-    function del(k, i) { data[mode][k].splice(i, 1); rebalance(); }
-    function undo() { if(history.length){ let l = history.pop(); data[l.mode][l.target].pop(); if(l.mode === 'LS' && lsCount > 0 && !["العمليات","نائب العمليات"].includes(l.target)) lsCount--; render(); } }
-    function rebalance() {
-        let fieldKeys = mode === 'LS' ? ["لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"];
-        let all = [];
-        fieldKeys.forEach(k => { all.push(...data[mode][k]); data[mode][k] = []; });
+    // تعديل دالة الخروج: لا تسحب أحداً لمكان العمليات الفارغ
+    function toExit(k, i) { 
+        data[mode]["تسجيل الخروج"].push(data[mode][k].splice(i, 1)[0]); 
+        
+        // إعادة ترتيب الميدان فقط إذا كان الشخص الخارج من الميدان
+        const fieldUnitsLS = ["لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"];
+        const fieldUnitsSB = ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"];
+        
+        if (fieldUnitsLS.includes(k) || fieldUnitsSB.includes(k)) {
+            rebalanceField(); 
+        } else {
+            // لو خرج من العمليات، لا تعيد الجدولة (اترك مكانه فارغاً للجديد)
+            render();
+        }
+    }
+
+    function del(k, i) { data[mode][k].splice(i, 1); render(); }
+    
+    // دالة مخصصة لإعادة جدولة الميدان فقط مع الحفاظ على العمليات
+    function rebalanceField() {
+        let fieldUnits = mode === 'LS' ? ["لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"];
+        let allFieldCodes = [];
+        fieldUnits.forEach(k => { 
+            allFieldCodes.push(...data[mode][k]); 
+            data[mode][k] = []; 
+        });
+        
         if(mode === 'LS') lsCount = 0;
-        all.forEach(u => {
-            let target = (mode === 'LS') ? getLSTarget() : getSBTarget();
+        
+        allFieldCodes.forEach(u => {
+            // نستخدم منطق توزيع الميدان فقط هنا متجاوزين العمليات مؤقتاً
+            let target;
+            if (mode === 'LS') {
+                lsCount++;
+                const order = [null, "لام 2", "لام 4", "لام 3", "لام 1", "فرسان", "لام 2", "لام 4", "لام 3", "لام 1", "لام 2", "لام 4", "لام 1", "لام 5"];
+                target = (lsCount <= 13) ? order[lsCount] : ["لام 2", "لام 4", "لام 3", "لام 1", "لام 5", "فرسان"][(lsCount-14)%6];
+            } else {
+                let total = ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"].reduce((s, k) => s + data.SB[k].length, 0);
+                const path = ["سين 1", "باء 1", "سين", "جيم 1", "باء", "سين 1", "باء 1", "سين", "جيم 1", "باء", "سين 1", "باء 1", "سين", "جيم 1", "سين 1", "سين", "باء", "باء", "جيم 2", "جيم 2", "جيم 2"];
+                target = total >= 21 ? ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"][(total - 21) % 6] : path[total];
+            }
             data[mode][target].push(u);
         });
         render();
@@ -171,11 +206,8 @@
     function copyReport() {
         const now = new Date();
         const rNum = document.getElementById('repNum').innerText;
-        
-        // الأرقام الإنجليزية للوقت والتاريخ
-        const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
-                           .replace('AM', 'ص').replace('PM', 'م');
-        const dateStr = now.toLocaleDateString('en-GB').split('/').reverse().join('/'); // YYYY/MM/DD
+        const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }).replace('AM', 'ص').replace('PM', 'م');
+        const dateStr = now.toLocaleDateString('en-GB').split('/').reverse().join('/');
         const days = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
         const dayStr = days[now.getDay()];
 
@@ -193,9 +225,8 @@
             }
             finalTxt += `${k} :\n${content}\n\n`;
         });
-
         navigator.clipboard.writeText(finalTxt);
-        alert(`✅ تم نسخ تقرير ${mode === 'LS' ? 'لوس سانتوس' : 'ساندي'} بنجاح`);
+        alert(`✅ تم النسخ`);
     }
 
     function manual(k) { 
@@ -204,7 +235,6 @@
             let fullCode = activeLet + "-" + n;
             if(isDuplicate(fullCode)) return;
             data[mode][k].push(fullCode); 
-            history.push({mode, target:k}); 
             render(); 
         }
     }
@@ -212,11 +242,17 @@
     function resetSystem() { if(confirm("تصفير؟")) { localStorage.removeItem('ems_v5_final'); location.reload(); }}
     function setMode(m) { mode = m; render(); }
     function changeRepNum() { let n = prompt("الرقم:"); if(n) document.getElementById('repNum').innerText = n; }
+    function undo() { if(history.length){ let l = history.pop(); data[l.mode][l.target].pop(); render(); } }
 
     const lets = ['E','A','F','M','S','C','G','P','H'];
     lets.forEach(l => {
         let b = document.createElement('button'); b.className = 'let-btn' + (l === activeLet ? ' active' : ''); b.innerText = l;
-        b.onclick = () => { activeLet = l; document.querySelectorAll('.let-btn').forEach(x => x.classList.remove('active')); b.classList.add('active'); };
+        b.onclick = () => { 
+            activeLet = l; 
+            document.querySelectorAll('.let-btn').forEach(x => x.classList.remove('active')); 
+            b.classList.add('active'); 
+            document.getElementById('mainInput').placeholder = (['M', 'F', 'A', 'S'].includes(l)) ? "00" : "000";
+        };
         document.getElementById('letterGroup').appendChild(b);
     });
 
