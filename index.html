@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>نظام العمليات المتكامل - النسخة الشاملة</title>
+    <title>نظام العمليات المتكامل</title>
     <style>
         :root { --red: #b32633; --gold: #ffd700; --bg: #0a0a0a; --glass: rgba(255,255,255,0.1); }
         body { font-family: 'Segoe UI', sans-serif; background: #111 url('https://i.top4top.io/p_3592jzcr01.jpg') no-repeat center center fixed; background-size: cover; color: white; margin: 0; padding: 10px; padding-bottom: 120px; }
@@ -37,7 +37,6 @@
         .tag-menu { display: none; position: absolute; top: 100%; right: 0; background: #222; z-index: 100; border: 1px solid #555; width: 110px; border-radius: 5px; direction: rtl; }
         .tag:hover .tag-menu { display: block; }
         .tag-menu div { padding: 8px; font-size: 12px; border-bottom: 1px solid #333; text-align: center; color: white; }
-        .tag-menu div:hover { background: var(--red); }
 
         .btn-ui { padding: 8px 12px; cursor: pointer; border-radius: 5px; background: #222; color: white; border: 1px solid #444; font-weight: bold; }
         .btn-ui.active { background: var(--red); }
@@ -99,11 +98,11 @@
         
         <div style="display:flex; gap:5px; justify-content:center; flex-wrap: wrap;">
             <button class="btn-ui" onclick="manualAdd('القيادة')">➕ قيادة</button>
-            <button class="btn-ui" onclick="manualAdd('الإشراف العام')">➕ إشراف</button>
+            <button class="btn-ui" onclick="manualAdd('اشراف عام')">➕ اشراف</button>
             <button class="btn-ui" onclick="manualAdd('مشرف ميداني')">➕ مشرف ميدان</button>
             <button class="btn-ui" onclick="manualAdd('الميناء')">➕ ميناء</button>
-            <button class="btn-ui" onclick="manualAdd('بحث وإنقاذ')">➕ بحث</button>
-            <button class="btn-ui" onclick="manualAdd('الدعم الفني')">➕ دعم</button>
+            <button class="btn-ui" onclick="manualAdd('وحدات البحث والإنقاذ')">➕ بحث</button>
+            <button class="btn-ui" onclick="manualAdd('دعم')">➕ دعم</button>
         </div>
     </div>
 
@@ -140,26 +139,27 @@
     const configs = {
         lous: {
             main: [{n:"العمليات", c:1}, {n:"نائب العمليات", c:1}, {n:"لام 1", c:3}, {n:"لام 2", c:3}, {n:"لام 3", c:2}, {n:"لام 4", c:3}, {n:"لام 5", c:1}, {n:"فرسان", c:1}],
-            order: ["القيادة", "الإشراف العام", "مشرف ميداني", "العمليات", "نائب العمليات", "لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان", "الدعم الفني", "الميناء", "بحث وإنقاذ", "تسجيل الخروج"],
+            order: ["القيادة", "اشراف عام", "مشرف ميداني", "العمليات", "نائب العمليات", "لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان", "دعم", "الميناء", "وحدات البحث والإنقاذ", "تسجيل الخروج"],
             breakOrder: ["لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"]
         },
         sandy: {
             main: [{n:"العمليات", c:1}, {n:"نائب العمليات", c:1}, {n:"سين 1", c:4}, {n:"سين", c:4}, {n:"باء 1", c:3}, {n:"باء", c:4}, {n:"جيم 1", c:3}, {n:"جيم 2", c:3}],
-            order: ["القيادة", "الإشراف العام", "مشرف ميداني", "العمليات", "نائب العمليات", "سين 1", "سين", "باء 1", "باء", "جيم 1", "جيم 2", "الدعم الفني", "الميناء", "بحث وإنقاذ", "تسجيل الخروج"],
+            order: ["القيادة", "اشراف عام", "مشرف ميداني", "العمليات", "نائب العمليات", "سين 1", "سين", "باء 1", "باء", "جيم 1", "جيم 2", "دعم", "الميناء", "وحدات البحث والإنقاذ", "تسجيل الخروج"],
             breakOrder: ["سين 1", "سين", "باء 1", "باء", "جيم 1", "جيم 2"]
         }
     };
 
     function init() {
         document.getElementById('reportDisplay').innerText = reportNum;
-        let saved = localStorage.getItem('ems_master_data');
+        let saved = localStorage.getItem('ems_v11_data');
         if(saved) data = JSON.parse(saved); else resetDataStructure();
         render(); updateClock(); setInterval(updateClock, 1000);
     }
 
     function resetDataStructure() {
         data = {};
-        [...configs.lous.order, ...configs.sandy.order].forEach(k => data[k] = []);
+        let keys = [...configs.lous.order, ...configs.sandy.order];
+        keys.forEach(k => data[k] = []);
     }
 
     function updateClock() {
@@ -175,7 +175,6 @@
         el.value = el.value.replace(/[^0-9]/g, '');
         let limit = document.getElementById('digitMode').checked ? 4 : 3;
         if (el.value.length >= limit) {
-            // كود إجبار الترتيب من اليسار E-000
             let code = "\u202D" + activeLetter + "-" + el.value.substring(0, limit) + "\u202C";
             distribute(code); el.value = '';
         }
@@ -209,7 +208,7 @@
         </div></div>`;
         
         document.getElementById('mainGrid').innerHTML = configs[currentZone].main.map(u => build(u.n)).join('');
-        document.getElementById('leadGrid').innerHTML = ["القيادة", "الإشراف العام", "مشرف ميداني", "الميناء", "بحث وإنقاذ", "الدعم الفني"].map(build).join('');
+        document.getElementById('leadGrid').innerHTML = ["القيادة", "اشراف عام", "مشرف ميداني", "الميناء", "وحدات البحث والإنقاذ", "دعم"].map(build).join('');
         document.getElementById('exitGrid').innerHTML = build("تسجيل الخروج");
     }
 
@@ -227,11 +226,11 @@
     }
 
     function openPreview() { document.getElementById('reportText').innerText = generateReport(); document.getElementById('reportModal').style.display = 'block'; }
-    function copyDirect() { navigator.clipboard.writeText(generateReport()).then(() => alert("✅ تم النسخ بالتنسيق الصحيح")); }
+    function copyDirect() { navigator.clipboard.writeText(generateReport()).then(() => alert("✅ تم النسخ: تم تغيير المسمى إلى 'اشراف عام'")); }
     function copyFromModal() { copyDirect(); closeModal(); }
     function closeModal() { document.getElementById('reportModal').style.display = 'none'; }
-    function save() { localStorage.setItem('ems_master_data', JSON.stringify(data)); }
-    function restoreData() { let b = localStorage.getItem('ems_master_data'); if(b){ data=JSON.parse(b); render(); alert("✅ تمت الاستعادة"); } }
+    function save() { localStorage.setItem('ems_v11_data', JSON.stringify(data)); }
+    function restoreData() { let b = localStorage.getItem('ems_v11_data'); if(b){ data=JSON.parse(b); render(); alert("✅ تمت الاستعادة"); } }
     function del(n, i) { data[n].splice(i, 1); render(); save(); }
     function move(f, t, i) { data[t].push(data[f].splice(i, 1)[0]); render(); save(); }
     function setZone(z) { currentZone = z; document.querySelectorAll('#z-lous, #z-sandy').forEach(b => b.classList.toggle('active', b.id === 'z-'+z)); render(); }
