@@ -2,11 +2,11 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>EMS TOTAL SEPARATION - V4</title>
+    <title>EMS System - Professional Separation</title>
     <style>
         :root { --red: #b32633; --blue: #0056b3; --gold: #ffd700; --bg: #0a0a0a; --purple: #6a1b9a; --white: #ffffff; }
         body { font-family: 'Segoe UI', sans-serif; background: #111 url('https://i.top4top.io/p_3592jzcr01.jpg') no-repeat center center fixed; background-size: cover; color: white; margin: 0; padding: 10px; padding-bottom: 120px; }
-        .overlay-bg { background: rgba(0,0,0,0.94); min-height: 100vh; padding: 20px; border-radius: 15px; }
+        .overlay-bg { background: rgba(0,0,0,0.95); min-height: 100vh; padding: 20px; border-radius: 15px; }
         .mode-selection { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; }
         .btn-mode { flex: 1; max-width: 400px; padding: 18px; font-size: 22px; font-weight: 900; border-radius: 12px; border: 3px solid #333; cursor: pointer; color: white; background: #222; }
         #lsTabBtn.active { background: var(--red); border-color: white; box-shadow: 0 0 15px var(--red); }
@@ -15,23 +15,23 @@
         .system-container.active { display: block; }
         .info-bar { display: flex; justify-content: space-between; align-items: center; background: var(--bg); padding: 12px; border-radius: 10px; margin-bottom: 20px; border-bottom: 4px solid #444; }
         .main-controls { background: rgba(0,0,0,0.85); padding: 25px; border-radius: 20px; border: 1px solid #555; margin-bottom: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        .let-btn { width: 52px; height: 52px; border: 2px solid #444; background: #222; color: white; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; }
+        .let-btn { width: 50px; height: 50px; border: 2px solid #444; background: #222; color: white; border-radius: 10px; cursor: pointer; font-weight: bold; }
         .active-ls { background: var(--red) !important; border-color: white !important; }
         .active-sb { background: var(--blue) !important; border-color: white !important; }
-        .main-input { font-size: 50px; width: 180px; text-align: center; background: #000; border: 2px solid #555; border-radius: 15px; padding: 10px; outline: none; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .card { background: rgba(0,0,0,0.7); border: 1px solid #444; border-radius: 10px; min-height: 100px; }
-        .card-header { padding: 10px; text-align: center; font-weight: bold; font-size: 14px; }
+        .main-input { font-size: 50px; width: 180px; text-align: center; background: #000; border: 2px solid #555; border-radius: 15px; padding: 10px; color: white; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .card { background: rgba(0,0,0,0.7); border: 1px solid #444; border-radius: 10px; overflow: hidden; }
+        .card-header { padding: 8px; text-align: center; font-weight: bold; font-size: 14px; }
         .ls-header { background: var(--red); }
         .sb-header { background: var(--blue); }
         .card-purple .card-header { background: var(--purple) !important; }
         .card-white .card-header { background: var(--white) !important; color: black; }
-        .card-body { padding: 10px; display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; }
-        .tag { background: #000; border: 1px solid #444; padding: 5px 10px; border-radius: 5px; font-weight: bold; position: relative; cursor: pointer; }
-        .tag-menu { display: none; position: absolute; top: 100%; right: 0; background: #222; z-index: 100; border: 1px solid #555; width: 100px; }
+        .card-body { padding: 10px; display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; min-height: 40px; }
+        .tag { background: #000; border: 1px solid #444; padding: 5px 8px; border-radius: 5px; font-weight: bold; position: relative; cursor: pointer; font-size: 12px; }
+        .tag-menu { display: none; position: absolute; top: 100%; right: 0; background: #222; z-index: 100; border: 1px solid #555; width: 90px; }
         .tag:hover .tag-menu { display: block; }
         .tag-menu div { padding: 8px; border-bottom: 1px solid #333; cursor: pointer; text-align: center; }
-        .bottom-actions { position: fixed; bottom: 0; left: 0; right: 0; background: #050505; padding: 20px; display: flex; justify-content: center; border-top: 3px solid #444; gap: 20px; }
+        .bottom-actions { position: fixed; bottom: 0; left: 0; right: 0; background: #050505; padding: 20px; display: flex; justify-content: center; border-top: 3px solid #444; gap: 20px; z-index: 1000; }
         .btn-side { padding: 10px 15px; background: #333; color: white; border-radius: 8px; cursor: pointer; border: 1px solid #555; font-weight: bold; }
     </style>
 </head>
@@ -46,7 +46,7 @@
     <div id="systemLS" class="system-container active">
         <div class="info-bar" style="border-color: var(--red);">
             <div>تقرير LS رقم: <span id="repNumLS" onclick="changeRepNum('LS')" style="color:var(--gold); cursor:pointer;">1</span></div>
-            <div class="clock">00:00:00</div>
+            <div id="clockLS" style="color:var(--gold); font-weight:bold;">00:00:00</div>
         </div>
         <div class="main-controls">
             <div style="display:flex; gap:10px;">
@@ -56,7 +56,7 @@
             <div id="lettersLS" class="letter-group" style="display:flex; gap:5px;"></div>
             <div style="display:flex; align-items:center; gap:10px;">
                 <button class="btn-side" onclick="toggleDigits('LS')" id="digitBtnLS">3 أرقام</button>
-                <input type="text" id="inputLS" class="main-input" style="color:var(--red);" placeholder="000" maxlength="4" oninput="handleInput('LS', this)">
+                <input type="text" id="inputLS" class="main-input" style="border-color:var(--red);" placeholder="000" maxlength="4" oninput="handleInput('LS', this)">
                 <button class="btn-side" onclick="undo('LS')">↩️ تراجع</button>
             </div>
         </div>
@@ -68,7 +68,7 @@
     <div id="systemSB" class="system-container">
         <div class="info-bar" style="border-color: var(--blue);">
             <div>تقرير SB رقم: <span id="repNumSB" onclick="changeRepNum('SB')" style="color:var(--gold); cursor:pointer;">1</span></div>
-            <div class="clock">00:00:00</div>
+            <div id="clockSB" style="color:var(--gold); font-weight:bold;">00:00:00</div>
         </div>
         <div class="main-controls">
             <div style="display:flex; gap:10px;">
@@ -78,7 +78,7 @@
             <div id="lettersSB" class="letter-group" style="display:flex; gap:5px;"></div>
             <div style="display:flex; align-items:center; gap:10px;">
                 <button class="btn-side" onclick="toggleDigits('SB')" id="digitBtnSB">3 أرقام</button>
-                <input type="text" id="inputSB" class="main-input" style="color:var(--blue);" placeholder="000" maxlength="4" oninput="handleInput('SB', this)">
+                <input type="text" id="inputSB" class="main-input" style="border-color:var(--blue);" placeholder="000" maxlength="4" oninput="handleInput('SB', this)">
                 <button class="btn-side" onclick="undo('SB')">↩️ تراجع</button>
             </div>
         </div>
@@ -89,14 +89,14 @@
 </div>
 
 <div class="bottom-actions">
-    <button onclick="copyAction()" style="padding:15px 100px; background:#218838; color:white; border-radius:10px; font-weight:bold; font-size:22px; cursor:pointer; border:none;">📋 نسخ التقرير</button>
+    <button onclick="copyAction()" style="padding:15px 120px; background:#218838; color:white; border-radius:10px; font-weight:bold; font-size:22px; cursor:pointer; border:none;">📋 نسخ التقرير</button>
 </div>
 
 <script>
     let currentSystem = 'LS';
     const config = { 
-        LS: { let: 'E', dig: 3, hist: [], storage: 'EMS_LS_V4' }, 
-        SB: { let: 'E', dig: 3, hist: [], storage: 'EMS_SB_V4' } 
+        LS: { let: 'E', dig: 3, hist: [], storage: 'DATA_LS_V5' }, 
+        SB: { let: 'E', dig: 3, hist: [], storage: 'DATA_SB_V5' } 
     };
 
     let dataLS = { "العمليات":[], "نائب العمليات":[], "لام 2":[], "لام 4":[], "لام 3":[], "لام 1":[], "فرسان":[], "لام 5":[], "القيادة":[], "اشراف عام":[], "مشرف ميداني":[], "وحدات البحث و الانقاذ":[], "دعم":[], "تسجيل الخروج":[] };
@@ -120,66 +120,64 @@
         }
     }
 
-    // منطق لوس سانتوس الصارم
     function logicLS(d) {
-        let fieldTotal = d["لام 2"].length + d["لام 4"].length + d["لام 3"].length + d["لام 1"].length + d["فرسان"].length + d["لام 5"].length;
-        if (fieldTotal < 5) {
-            if (d["لام 2"].length < 1) return "لام 2";
-            if (d["لام 4"].length < 1) return "لام 4";
-            if (d["لام 3"].length < 1) return "لام 3";
-            if (d["لام 1"].length < 1) return "لام 1";
-            return "فرسان";
-        }
-        if (fieldTotal === 5) return "لام 2"; // تصبح 2
-        if (fieldTotal === 6) return "لام 4"; // تصبح 2
-        if (fieldTotal === 7) return "لام 3"; // تصبح 2
-        if (fieldTotal === 8) return "لام 1"; // تصبح 2
-        if (fieldTotal === 9) return "لام 2"; // تصبح 3
-        if (fieldTotal === 10) return "لام 4"; // تصبح 3
-        if (fieldTotal === 11) return "لام 1"; // تصبح 3
-        if (fieldTotal === 12) return "لام 5"; // وحدة 1
-        // بعد الاكتفاء
-        const cycle = ["لام 2", "لام 4", "لام 3", "لام 1", "لام 5", "فرسان"];
-        return cycle[(fieldTotal - 13) % 6];
+        let n = d["لام 2"].length + d["لام 4"].length + d["لام 3"].length + d["لام 1"].length + d["فرسان"].length + d["لام 5"].length;
+        if (n === 0) return "لام 2"; if (n === 1) return "لام 4"; if (n === 2) return "لام 3"; if (n === 3) return "لام 1"; if (n === 4) return "فرسان";
+        if (n === 5) return "لام 2"; if (n === 6) return "لام 4"; if (n === 7) return "لام 3"; if (n === 8) return "لام 1";
+        if (n === 9) return "لام 2"; if (n === 10) return "لام 4"; if (n === 11) return "لام 1"; if (n === 12) return "لام 5";
+        const cycle = ["لام 2", "لام 4", "لام 3", "لام 1", "لام 5", "فرسان"]; return cycle[(n - 13) % 6] || "لام 2";
     }
 
-    // منطق ساندي وبوليتو الصارم (بالحرف)
+    // --- منطق ساندي وبوليتو (تطبيق حرفي للنص المرسل) ---
     function logicSB(d) {
-        // المرحلة 1: وحدة واحدة للجميع (ماعدا جيم 2)
-        if (d["سين 1"].length < 1) return "سين 1";
-        if (d["باء 1"].length < 1) return "باء 1";
-        if (d["سين"].length < 1) return "سين";
-        if (d["جيم 1"].length < 1) return "جيم 1";
-        if (d["باء"].length < 1) return "باء";
-
-        // المرحلة 2: وحدتين للجميع (ماعدا جيم 2)
-        if (d["سين 1"].length < 2) return "سين 1";
-        if (d["باء 1"].length < 2) return "باء 1";
-        if (d["سين"].length < 2) return "سين";
-        if (d["جيم 1"].length < 2) return "جيم 1";
-        if (d["باء"].length < 2) return "باء";
-
-        // المرحلة 3: 3 وحدات (سين 1، باء 1، سين، جيم 1)
-        if (d["سين 1"].length < 3) return "سين 1";
-        if (d["باء 1"].length < 3) return "باء 1";
-        if (d["سين"].length < 3) return "سين";
-        if (d["جيم 1"].length < 3) return "جيم 1";
-
-        // المرحلة 4: 4 وحدات لـ (سين 1، سين)
-        if (d["سين 1"].length < 4) return "سين 1";
-        if (d["سين"].length < 4) return "سين";
-
-        // المرحلة 5: باء (رفعها لـ 3 ثم 4)
-        if (d["باء"].length < 3) return "باء";
-        if (d["باء"].length < 4) return "باء";
-
-        // المرحلة 6: جيم 2 (1، 2، 3 وحدات)
-        if (d["جيم 2"].length < 3) return "جيم 2";
-
-        // المرحلة النهائية: دوري للكل
+        let n = d["سين 1"].length + d["باء 1"].length + d["سين"].length + d["جيم 1"].length + d["باء"].length + d["جيم 2"].length;
+        
+        // n=0: سين 1 (1)
+        if (n === 0) return "سين 1";
+        // n=1: باء 1 (1)
+        if (n === 1) return "باء 1";
+        // n=2: سين (1)
+        if (n === 2) return "سين";
+        // n=3: جيم 1 (1)
+        if (n === 3) return "جيم 1";
+        // n=4: باء (1)
+        if (n === 4) return "باء";
+        // n=5: سين 1 تصبح (2)
+        if (n === 5) return "سين 1";
+        // n=6: باء 1 تصبح (2)
+        if (n === 6) return "باء 1";
+        // n=7: سين تصبح (2)
+        if (n === 7) return "سين";
+        // n=8: جيم 1 تصبح (2)
+        if (n === 8) return "جيم 1";
+        // n=9: باء تصبح (2)
+        if (n === 9) return "باء";
+        // n=10: سين 1 تصبح (3)
+        if (n === 10) return "سين 1";
+        // n=11: باء 1 تصبح (3)
+        if (n === 11) return "باء 1";
+        // n=12: سين تصبح (3)
+        if (n === 12) return "سين";
+        // n=13: جيم 1 تصبح (3)
+        if (n === 13) return "جيم 1";
+        // n=14: سين 1 تصبح (4)
+        if (n === 14) return "سين 1";
+        // n=15: سين تصبح (4)
+        if (n === 15) return "سين";
+        // n=16: باء تصبح (3)
+        if (n === 16) return "باء";
+        // n=17: باء تصبح (4)
+        if (n === 17) return "باء";
+        // n=18: جيم 2 تصبح (1)
+        if (n === 18) return "جيم 2";
+        // n=19: جيم 2 تصبح (2)
+        if (n === 19) return "جيم 2";
+        // n=20: جيم 2 تصبح (3)
+        if (n === 20) return "جيم 2";
+        
+        // بعد الاكتفاء التام (العودة للأولوية من البداية)
         const cycle = ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"];
-        let total = d["سين 1"].length + d["باء 1"].length + d["سين"].length + d["جيم 1"].length + d["باء"].length + d["جيم 2"].length;
-        return cycle[total % 6];
+        return cycle[(n - 21) % 6] || "سين 1";
     }
 
     function render(sys) {
@@ -198,9 +196,9 @@
         localStorage.setItem(config[sys].storage, JSON.stringify(d));
     }
 
-    function moveOut(sys, k, i) { (sys==='LS'?dataLS:dataSB)["تسجيل الخروج"].push((sys==='LS'?dataLS:dataSB)[k].splice(i, 1)[0]); autoRebalance(sys); }
-    function delUnit(sys, k, i) { (sys==='LS'?dataLS:dataSB)[k].splice(i, 1); autoRebalance(sys); }
-    function autoRebalance(sys) {
+    function moveOut(sys, k, i) { (sys==='LS'?dataLS:dataSB)["تسجيل الخروج"].push((sys==='LS'?dataLS:dataSB)[k].splice(i, 1)[0]); rebalance(sys); }
+    function delUnit(sys, k, i) { (sys==='LS'?dataLS:dataSB)[k].splice(i, 1); rebalance(sys); }
+    function rebalance(sys) {
         let d = (sys==='LS'?dataLS:dataSB); let ks = (sys==='LS')?["لام 1","لام 2","لام 3","لام 4","لام 5","فرسان"]:["سين 1","باء 1","سين","جيم 1","باء","جيم 2"];
         let p = []; ks.forEach(k=>{p.push(...d[k]); d[k]=[];}); p.forEach(c=>{ let t=(sys==='LS'?logicLS(d):logicSB(d)); d[t].push(c); }); render(sys);
     }
@@ -209,12 +207,12 @@
     function switchSystem(sys) { currentSystem = sys; document.querySelectorAll('.system-container').forEach(c => c.classList.remove('active')); document.getElementById(`system${sys}`).classList.add('active'); document.getElementById('lsTabBtn').classList.toggle('active', sys==='LS'); document.getElementById('sbTabBtn').classList.toggle('active', sys==='SB'); }
     function toggleDigits(sys) { config[sys].dig = (config[sys].dig===3?4:3); document.getElementById(`digitBtn${sys}`).innerText = config[sys].dig + " أرقام"; }
     function changeRepNum(sys) { let n = prompt("رقم التقرير:"); if(n) document.getElementById(`repNum${sys}`).innerText = n; }
-    function resetSys(sys) { if(confirm("تصفير؟")){ localStorage.removeItem(config[sys].storage); location.reload(); } }
+    function resetSys(sys) { if(confirm("تصفير بيانات هذه المدينة؟")){ localStorage.removeItem(config[sys].storage); location.reload(); } }
 
     function copyAction() {
         const sys = currentSystem; const d = (sys==='LS'?dataLS:dataSB); const r = document.getElementById(`repNum${sys}`).innerText;
         const now = new Date(); const days = ["الأحد","الأثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
-        let txt = `تقرير ( ${sys==='LS'?'لوس سانتوس':'ساندي وبوليتو'} ) رقم ( ${r} )\nاليوم: ${days[now.getDay()]} | الوقت: ${now.toLocaleTimeString()}\n\n`;
+        let txt = `تقرير ( ${sys==='LS'?'لوس سانتوس':'ساندي وبوليتو'} ) رقم ( ${r} )\nاليوم: ${days[now.getDay()]} | التاريخ: ${now.toLocaleDateString()}\n\n`;
         Object.keys(d).forEach(k => { let u = d[k].length ? (k.includes("العمليات")?d[k].join(" | "):d[k].join("\n")) : "E-000"; txt += `${k} :\n${u}\n\n`; });
         navigator.clipboard.writeText(txt).then(() => alert("✅ تم نسخ تقرير "+sys));
     }
@@ -227,7 +225,7 @@
         });
         const saved = JSON.parse(localStorage.getItem(config[sys].storage)); if(saved) { if(sys==='LS') dataLS = saved; else dataSB = saved; }
     });
-    setInterval(() => { let t = new Date().toLocaleTimeString('en-GB'); document.querySelectorAll('.clock').forEach(c => c.innerText = t); }, 1000);
+    setInterval(() => { let t = new Date().toLocaleTimeString('en-GB'); document.getElementById('clockLS').innerText = t; document.getElementById('clockSB').innerText = t; }, 1000);
     render('LS'); render('SB');
 </script>
 </body>
