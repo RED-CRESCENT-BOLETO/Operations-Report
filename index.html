@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>نظام EMS المتكامل - النسخة المستقرة</title>
+    <title>نظام EMS - الإصلاح النهائي</title>
     <style>
         :root { --red: #b32633; --blue: #0056b3; --gold: #ffd700; --bg: #0a0a0a; --purple: #6a1b9a; --white: #ffffff; }
         body { font-family: 'Segoe UI', sans-serif; background: #111 url('https://i.top4top.io/p_3592jzcr01.jpg') no-repeat center center fixed; background-size: cover; color: white; margin: 0; padding: 10px; padding-bottom: 120px; }
@@ -57,19 +57,17 @@
         </div>
         <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
             <button class="btn-side" onclick="manual('القيادة')">➕ قيادة</button>
-            <button class="btn-side" onclick="manual('اشراف عام')">➕ اشراف</button>
+            <button class="btn-side" onclick="manual('اشراف عام')">➕ اشراف عام</button>
             <button class="btn-side" onclick="manual('مشرف ميداني')">➕ مشرف</button>
-            <button class="btn-side" onclick="manual('العمليات')">➕ عمليات</button>
-            <button class="btn-side" onclick="manual('نائب العمليات')">➕ نائب</button>
             <button class="btn-side" onclick="manual('وحدات البحث و الانقاذ')">➕ بحث</button>
             <button class="btn-side" onclick="manual('الميناء')">➕ ميناء</button>
             <button class="btn-side" onclick="manual('دعم')">➕ دعم</button>
         </div>
     </div>
 
-    <h3 id="secTitle" style="color:var(--gold); border-right:4px solid var(--red); padding-right:10px;">الميدان</h3>
+    <h3 id="secTitle" style="color:var(--gold); border-right:4px solid var(--red); padding-right:10px;">الميدان والعمليات</h3>
     <div class="grid" id="fieldGrid"></div>
-    <h3 style="color:var(--gold); border-right:4px solid var(--red); padding-right:10px;">الإدارة</h3>
+    <h3 style="color:var(--gold); border-right:4px solid var(--red); padding-right:10px;">القيادة والإشراف</h3>
     <div class="grid" id="adminGrid"></div>
     <h3 style="color:var(--gold); border-right:4px solid var(--red); padding-right:10px;">خروج</h3>
     <div class="grid" id="exitGrid"></div>
@@ -87,6 +85,8 @@
         SB: { "القيادة":[], "اشراف عام":[], "مشرف ميداني":[], "العمليات":[], "نائب العمليات":[], "سين 1":[], "باء 1":[], "سين":[], "جيم 1":[], "باء":[], "جيم 2":[], "دعم":[], "الميناء":[], "وحدات البحث و الانقاذ":[], "تسجيل الخروج":[] }
     };
 
+    const visualNames = { "اشراف عام": "الاشراف العام" };
+
     function isDuplicate(code) {
         for (let m in data) {
             for (let k in data[m]) {
@@ -96,33 +96,25 @@
         return false;
     }
 
-    function getSBTarget() {
-        let d = data.SB;
-        // رجعنا الترتيب يبدأ بالعمليات والنائب
-        if (d["العمليات"].length < 1) return "العمليات";
-        if (d["نائب العمليات"].length < 1) return "نائب العمليات";
+    function getNextTarget() {
+        let d = data[mode];
+        if (d["العمليات"].length === 0) return "العمليات";
+        if (d["نائب العمليات"].length === 0) return "نائب العمليات";
         
-        let total = ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"].reduce((s, k) => s + d[k].length, 0);
-        const path = ["سين 1", "باء 1", "سين", "جيم 1", "باء", "سين 1", "باء 1", "سين", "جيم 1", "باء", "سين 1", "باء 1", "سين", "جيم 1", "سين 1", "سين", "باء", "باء", "جيم 2", "جيم 2", "جيم 2"];
-        if (total >= 21) {
-            const loop = ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"];
-            return loop[(total - 21) % 6];
+        if (mode === 'LS') {
+            lsCount++;
+            const order = [null, "لام 2", "لام 4", "لام 3", "لام 1", "فرسان", "لام 2", "لام 4", "لام 3", "لام 1", "لام 2", "لام 4", "لام 1", "لام 5"];
+            return (lsCount <= 13) ? order[lsCount] : ["لام 2", "لام 4", "لام 3", "لام 1", "لام 5", "فرسان"][(lsCount-14)%6];
+        } else {
+            let total = ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"].reduce((s, k) => s + d[k].length, 0);
+            const path = ["سين 1", "باء 1", "سين", "جيم 1", "باء", "سين 1", "باء 1", "سين", "جيم 1", "باء", "سين 1", "باء 1", "سين", "جيم 1", "سين 1", "سين", "باء", "باء", "جيم 2", "جيم 2", "جيم 2"];
+            return total >= 21 ? ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"][(total - 21) % 6] : path[total];
         }
-        return path[total];
-    }
-
-    function getLSTarget() {
-        if (data.LS["العمليات"].length < 1) return "العمليات";
-        if (data.LS["نائب العمليات"].length < 1) return "نائب العمليات";
-
-        lsCount++;
-        const order = [null, "لام 2", "لام 4", "لام 3", "لام 1", "فرسان", "لام 2", "لام 4", "لام 3", "لام 1", "لام 2", "لام 4", "لام 1", "لام 5"];
-        return (lsCount <= 13) ? order[lsCount] : ["لام 2", "لام 4", "لام 3", "لام 1", "لام 5", "فرسان"][(lsCount-14)%6];
     }
 
     function distribute(code) {
         if (isDuplicate(code)) return;
-        let target = (mode === 'LS') ? getLSTarget() : getSBTarget();
+        let target = getNextTarget();
         if(target) {
             data[mode][target].push(code);
             history.push({mode, target});
@@ -142,14 +134,16 @@
     function render() {
         document.getElementById('lsBtn').className = mode === 'LS' ? 'btn-mode active' : 'btn-mode';
         document.getElementById('ssBtn').className = mode === 'SB' ? 'btn-mode active' : 'btn-mode';
-        document.getElementById('secTitle').innerText = "الميدان - " + (mode === 'LS' ? "لوس سانتوس" : "ساندي وبوليتو");
         const d = data[mode];
         const fieldKeys = mode === 'LS' ? ["العمليات", "نائب العمليات", "لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["العمليات", "نائب العمليات", "سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"];
         const adminKeys = ["القيادة", "اشراف عام", "مشرف ميداني", "وحدات البحث و الانقاذ", "الميناء", "دعم"];
+        
         const draw = (k) => {
             let cls = ["القيادة","اشراف عام","مشرف ميداني"].includes(k) ? 'card-purple' : (["وحدات البحث و الانقاذ","الميناء","دعم"].includes(k) ? 'card-white' : '');
             let tags = d[k].map((u, i) => `<div class="tag">${u}<div class="tag-menu"><div onclick="toExit('${k}',${i})">➡️ خروج</div><div onclick="del('${k}',${i})">❌ حذف</div></div></div>`).join('');
-            return `<div class="card ${cls}"><div class="card-header">${k}</div><div class="card-body">${tags}</div></div>`;
+            // هنا نغير المسمى بصرياً فقط في البوكس
+            let displayName = visualNames[k] || k;
+            return `<div class="card ${cls}"><div class="card-header">${displayName}</div><div class="card-body">${tags}</div></div>`;
         };
         document.getElementById('fieldGrid').innerHTML = fieldKeys.map(draw).join('');
         document.getElementById('adminGrid').innerHTML = adminKeys.map(draw).join('');
@@ -157,46 +151,30 @@
         localStorage.setItem('ems_v5_final', JSON.stringify({data, lsCount}));
     }
 
-    // تعديل دالة الخروج: لا تسحب أحداً لمكان العمليات الفارغ
     function toExit(k, i) { 
         data[mode]["تسجيل الخروج"].push(data[mode][k].splice(i, 1)[0]); 
-        
-        // إعادة ترتيب الميدان فقط إذا كان الشخص الخارج من الميدان
-        const fieldUnitsLS = ["لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"];
-        const fieldUnitsSB = ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"];
-        
-        if (fieldUnitsLS.includes(k) || fieldUnitsSB.includes(k)) {
-            rebalanceField(); 
-        } else {
-            // لو خرج من العمليات، لا تعيد الجدولة (اترك مكانه فارغاً للجديد)
-            render();
-        }
+        const fieldUnits = mode === 'LS' ? ["لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"];
+        if (fieldUnits.includes(k)) rebalanceField(); 
+        else render();
     }
 
     function del(k, i) { data[mode][k].splice(i, 1); render(); }
-    
-    // دالة مخصصة لإعادة جدولة الميدان فقط مع الحفاظ على العمليات
+
     function rebalanceField() {
         let fieldUnits = mode === 'LS' ? ["لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"];
         let allFieldCodes = [];
-        fieldUnits.forEach(k => { 
-            allFieldCodes.push(...data[mode][k]); 
-            data[mode][k] = []; 
-        });
-        
+        fieldUnits.forEach(k => { allFieldCodes.push(...data[mode][k]); data[mode][k] = []; });
         if(mode === 'LS') lsCount = 0;
-        
         allFieldCodes.forEach(u => {
-            // نستخدم منطق توزيع الميدان فقط هنا متجاوزين العمليات مؤقتاً
             let target;
             if (mode === 'LS') {
                 lsCount++;
                 const order = [null, "لام 2", "لام 4", "لام 3", "لام 1", "فرسان", "لام 2", "لام 4", "لام 3", "لام 1", "لام 2", "لام 4", "لام 1", "لام 5"];
                 target = (lsCount <= 13) ? order[lsCount] : ["لام 2", "لام 4", "لام 3", "لام 1", "لام 5", "فرسان"][(lsCount-14)%6];
             } else {
-                let total = ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"].reduce((s, k) => s + data.SB[k].length, 0);
+                let currentTotal = ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"].reduce((s, k) => s + data.SB[k].length, 0);
                 const path = ["سين 1", "باء 1", "سين", "جيم 1", "باء", "سين 1", "باء 1", "سين", "جيم 1", "باء", "سين 1", "باء 1", "سين", "جيم 1", "سين 1", "سين", "باء", "باء", "جيم 2", "جيم 2", "جيم 2"];
-                target = total >= 21 ? ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"][(total - 21) % 6] : path[total];
+                target = currentTotal >= 21 ? ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"][(currentTotal - 21) % 6] : path[currentTotal];
             }
             data[mode][target].push(u);
         });
@@ -208,8 +186,7 @@
         const rNum = document.getElementById('repNum').innerText;
         const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }).replace('AM', 'ص').replace('PM', 'م');
         const dateStr = now.toLocaleDateString('en-GB').split('/').reverse().join('/');
-        const days = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
-        const dayStr = days[now.getDay()];
+        const dayStr = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"][now.getDay()];
 
         let header = `تم تحديث تقرير عمليات ( ${mode === 'LS' ? 'لوس سانتوس' : 'ساندي و بوليتو'} ) رقم ( ${rNum} ) في تمام الساعه (${timeStr}) في يوم ( ${dayStr} ) التاريخ ${dateStr}\n\n`;
         let finalTxt = header;
@@ -226,7 +203,7 @@
             finalTxt += `${k} :\n${content}\n\n`;
         });
         navigator.clipboard.writeText(finalTxt);
-        alert(`✅ تم النسخ`);
+        alert(`✅ تم النسخ بالتقرير الأصلي`);
     }
 
     function manual(k) { 
