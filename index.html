@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>نظام EMS - التقرير المطور</title>
+    <title>نظام EMS - نسخة الميدان المستقرة</title>
     <style>
         :root { --red: #b32633; --blue: #0056b3; --gold: #ffd700; --bg: #0a0a0a; --purple: #6a1b9a; --white: #ffffff; }
         body { font-family: 'Segoe UI', sans-serif; background: #111 url('https://i.top4top.io/p_3592jzcr01.jpg') no-repeat center center fixed; background-size: cover; color: white; margin: 0; padding: 10px; padding-bottom: 120px; }
@@ -118,8 +118,8 @@
 <script>
     let currentSystem = 'LS';
     const config = {
-        LS: { activeLet: 'E', digits: 3, count: 0, history: [], storageKey: 'ems_final_v10_ls' },
-        SB: { activeLet: 'E', digits: 3, count: 0, history: [], storageKey: 'ems_final_v10_sb' }
+        LS: { activeLet: 'E', digits: 3, count: 0, history: [], storageKey: 'ems_final_v11_ls' },
+        SB: { activeLet: 'E', digits: 3, count: 0, history: [], storageKey: 'ems_final_v11_sb' }
     };
 
     const protectedKeys = ["القيادة", "اشراف عام", "مشرف ميداني", "العمليات", "نائب العمليات", "وحدات البحث و الانقاذ", "الميناء", "دعم", "تسجيل الخروج"];
@@ -148,6 +148,32 @@
         }
     }
 
+    // تم إصلاح زر العشوائي ليعيد توزيع الأكواد الموجودة فقط
+    function randomizeExcluding(sys) {
+        let d = (sys === 'LS' ? dataLS : dataSB);
+        let fieldKeys = (sys === 'LS') ? ["لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["سين 1", "سين", "باء 1", "باء", "جيم 1", "جيم 2"];
+        
+        let pool = [];
+        fieldKeys.forEach(k => {
+            pool.push(...d[k]);
+            d[k] = [];
+        });
+
+        // خلط المصفوفة (Fisher-Yates shuffle)
+        for (let i = pool.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [pool[i], pool[j]] = [pool[j], pool[i]];
+        }
+
+        config[sys].count = 0;
+        pool.forEach(unit => {
+            let target = getNextTarget(sys, true);
+            d[target].push(unit);
+        });
+
+        renderSpecific(sys);
+    }
+
     function getNextTarget(sys, skipOps = false) {
         let d = (sys === 'LS' ? dataLS : dataSB);
         if (!skipOps) {
@@ -161,14 +187,13 @@
         } else {
             let fieldOnlyKeys = ["سين 1", "سين", "باء 1", "باء", "جيم 1", "جيم 2"];
             let total = fieldOnlyKeys.reduce((s, k) => s + d[k].length, 0);
-            const path = ["سين 1", "سين", "باء 1", "باء", "جيم 1", "جيم 2"];
-            return path[total % 6];
+            return fieldOnlyKeys[total % 6];
         }
     }
 
     function autoRebalance(sys) {
         let d = (sys === 'LS' ? dataLS : dataSB);
-        let fieldOnlyKeys = sys === 'LS' ? ["لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["سين 1", "سين", "باء 1", "باء", "جيم 1", "جيم 2"];
+        let fieldOnlyKeys = (sys === 'LS') ? ["لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["سين 1", "سين", "باء 1", "باء", "جيم 1", "جيم 2"];
         let pool = [];
         fieldOnlyKeys.forEach(k => { pool.push(...d[k]); d[k] = []; });
         config[sys].count = 0;
@@ -214,37 +239,21 @@
         const sys = currentSystem;
         const d = (sys === 'LS' ? dataLS : dataSB);
         const rNum = document.getElementById(`repNum${sys}`).innerText;
-        
         const now = new Date();
         const days = ["الأحد", "الأثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
         const dayName = days[now.getDay()];
         const dateStr = now.getFullYear() + "/" + String(now.getMonth() + 1).padStart(2, '0') + "/" + String(now.getDate()).padStart(2, '0');
         const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }).replace('AM', 'ص').replace('PM', 'م');
-
         let regionName = (sys === 'LS' ? 'لوس سانتوس' : 'ساندي و بوليتو');
-        
-        // التعديل هنا: الساعة بدلاً من الساعه
         let txt = `تم تحديث تقرير عمليات ( ${regionName} ) رقم ( ${rNum} ) في تمام الساعة ( ${timeStr} ) في يوم ( ${dayName} ) التاريخ ${dateStr}\n\n`;
-
         const keysOrder = (sys === 'LS') 
             ? ["القيادة", "اشراف عام", "مشرف ميداني", "العمليات", "نائب العمليات", "لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان", "دعم", "الميناء", "وحدات البحث و الانقاذ", "تسجيل الخروج"]
             : ["القيادة", "اشراف عام", "مشرف ميداني", "العمليات", "نائب العمليات", "سين 1", "سين", "باء 1", "باء", "جيم 1", "جيم 2", "دعم", "الميناء", "وحدات البحث و الانقاذ", "تسجيل الخروج"];
-
         keysOrder.forEach(k => {
-            let content = "";
-            if (d[k] && d[k].length > 0) {
-                if (k === "العمليات" || k === "نائب العمليات") {
-                    content = d[k].join(' | ') + " |";
-                } else {
-                    content = d[k].join('\n');
-                }
-            } else {
-                content = config[sys].activeLet + "-000";
-            }
+            let content = (d[k] && d[k].length > 0) ? ( (k === "العمليات" || k === "نائب العمليات") ? d[k].join(' | ') + " |" : d[k].join('\n') ) : "E-000";
             txt += `${k} :\n${content}\n\n`;
         });
-
-        navigator.clipboard.writeText(txt).then(() => alert("✅ تم نسخ تقرير " + regionName));
+        navigator.clipboard.writeText(txt).then(() => alert("✅ تم النسخ"));
     }
 
     function switchSystem(sys) {
@@ -260,13 +269,8 @@
             (sys === 'LS' ? dataLS : dataSB)[k].push(full); renderSpecific(sys); 
         } 
     }
-    function randomizeExcluding(sys) {
-        let d = (sys === 'LS' ? dataLS : dataSB);
-        for (let k in d) { if (!protectedKeys.includes(k)) d[k] = d[k].map(() => config[sys].activeLet + "-" + Math.floor(Math.random()*900+100)); }
-        renderSpecific(sys);
-    }
-    function resetSys(sys) { if(confirm("تصفير؟")) { localStorage.removeItem(config[sys].storageKey); location.reload(); }}
-    function changeRepNum(sys) { let n = prompt("الرقم:"); if(n) document.getElementById(`repNum${sys}`).innerText = n; }
+    function resetSys(sys) { if(confirm("تصفير النظام بالكامل؟")) { localStorage.removeItem(config[sys].storageKey); location.reload(); }}
+    function changeRepNum(sys) { let n = prompt("رقم التقرير:"); if(n) document.getElementById(`repNum${sys}`).innerText = n; }
     function toggleDigits(sys) { config[sys].digits = (config[sys].digits===3?4:3); document.getElementById(`digitBtn${sys}`).innerText = config[sys].digits + " أرقام"; }
 
     ['LS', 'SB'].forEach(sys => {
