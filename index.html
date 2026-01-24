@@ -2,38 +2,35 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>EMS SYSTEM - PRECISE PRIORITY</title>
+    <title>EMS SYSTEM - FINAL ACCURACY</title>
     <style>
         :root { --red: #b32633; --blue: #0056b3; --gold: #ffd700; --bg: #0a0a0a; --purple: #6a1b9a; --white: #ffffff; }
         body { font-family: 'Segoe UI', sans-serif; background: #111 url('https://i.top4top.io/p_3592jzcr01.jpg') no-repeat center center fixed; background-size: cover; color: white; margin: 0; padding: 10px; padding-bottom: 120px; }
-        .overlay-bg { background: rgba(0,0,0,0.9); min-height: 100vh; padding: 20px; border-radius: 15px; }
+        .overlay-bg { background: rgba(0,0,0,0.92); min-height: 100vh; padding: 20px; border-radius: 15px; }
         .mode-selection { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; }
-        .btn-mode { flex: 1; max-width: 400px; padding: 18px; font-size: 22px; font-weight: 900; border-radius: 12px; border: 3px solid #333; cursor: pointer; color: white; background: #222; transition: 0.3s; }
+        .btn-mode { flex: 1; max-width: 400px; padding: 18px; font-size: 22px; font-weight: 900; border-radius: 12px; border: 3px solid #333; cursor: pointer; color: white; background: #222; }
         #lsTabBtn.active { background: var(--red); border-color: white; box-shadow: 0 0 15px var(--red); }
         #sbTabBtn.active { background: var(--blue); border-color: white; box-shadow: 0 0 15px var(--blue); }
         .system-container { display: none; }
         .system-container.active { display: block; }
-        .info-bar { display: flex; justify-content: space-between; align-items: center; background: var(--bg); padding: 12px; border-bottom: 3px solid #444; border-radius: 10px; margin-bottom: 20px; }
-        .main-controls { background: rgba(0,0,0,0.85); padding: 30px; border-radius: 20px; border: 1px solid #555; margin: 0 auto 30px auto; width: 96%; display: flex; flex-direction: column; align-items: center; gap: 20px; }
-        .letter-group { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; width: 100%; }
-        .let-btn { width: 65px; height: 65px; border: 2px solid #444; background: #222; color: white; border-radius: 12px; cursor: pointer; font-size: 26px; font-weight: bold; }
-        .let-btn.active-ls { background: var(--red); border-color: white; box-shadow: 0 0 10px var(--red); }
-        .let-btn.active-sb { background: var(--blue); border-color: white; box-shadow: 0 0 10px var(--blue); }
-        .main-input { font-size: 55px; width: 220px; text-align: center; background: #000; border: 2px solid #555; border-radius: 15px; padding: 10px; outline: none; }
-        .btn-side { padding: 15px 25px; background: #333; color: white; border: 1px solid #555; border-radius: 10px; font-weight: bold; font-size: 20px; cursor: pointer; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; margin-bottom: 25px; }
-        .card { background: rgba(0,0,0,0.7); border: 1px solid #444; border-radius: 10px; min-height: 120px; }
-        .card-header { padding: 10px; text-align: center; font-weight: bold; border-radius: 10px 10px 0 0; }
+        .info-bar { display: flex; justify-content: space-between; align-items: center; background: var(--bg); padding: 12px; border-radius: 10px; margin-bottom: 20px; border-bottom: 3px solid #444; }
+        .main-controls { background: rgba(0,0,0,0.85); padding: 25px; border-radius: 20px; border: 1px solid #555; margin-bottom: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .let-btn { width: 60px; height: 60px; border: 2px solid #444; background: #222; color: white; border-radius: 10px; cursor: pointer; font-size: 22px; font-weight: bold; }
+        .active-ls { background: var(--red) !important; border-color: white !important; }
+        .active-sb { background: var(--blue) !important; border-color: white !important; }
+        .main-input { font-size: 50px; width: 200px; text-align: center; background: #000; border: 2px solid #555; border-radius: 15px; padding: 10px; outline: none; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .card { background: rgba(0,0,0,0.7); border: 1px solid #444; border-radius: 10px; min-height: 100px; }
+        .card-header { padding: 10px; text-align: center; font-weight: bold; border-radius: 10px 10px 0 0; background: #333; }
         .ls-header { background: var(--red); }
         .sb-header { background: var(--blue); }
-        .card-purple .card-header { background: var(--purple) !important; }
-        .card-white .card-header { background: var(--white) !important; color: black; }
-        .card-body { padding: 10px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-        .tag { background: #000; border: 1px solid #444; padding: 6px 14px; border-radius: 6px; font-weight: bold; position: relative; cursor: pointer; }
-        .tag-menu { display: none; position: absolute; top: 100%; right: 0; background: #222; z-index: 100; border: 1px solid #555; width: 120px; }
+        .card-body { padding: 10px; display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; }
+        .tag { background: #000; border: 1px solid #444; padding: 5px 10px; border-radius: 5px; font-weight: bold; position: relative; cursor: pointer; }
+        .tag-menu { display: none; position: absolute; top: 100%; right: 0; background: #222; z-index: 100; border: 1px solid #555; width: 100px; }
         .tag:hover .tag-menu { display: block; }
-        .tag-menu div { padding: 10px; cursor: pointer; border-bottom: 1px solid #333; }
+        .tag-menu div { padding: 8px; border-bottom: 1px solid #333; }
         .bottom-actions { position: fixed; bottom: 0; left: 0; right: 0; background: #050505; padding: 20px; display: flex; justify-content: center; border-top: 3px solid #444; }
+        .btn-side { padding: 12px 20px; background: #333; color: white; border-radius: 8px; cursor: pointer; border: 1px solid #555; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -45,28 +42,20 @@
     </div>
 
     <div id="systemLS" class="system-container active">
-        <div class="info-bar" style="border-bottom: 3px solid var(--red);">
-            <div>تقرير LS رقم: <button onclick="changeRepNum('LS')" id="repNumLS" style="background:none; color:var(--gold); border:1px solid #444; padding:5px 15px; cursor:pointer;">1</button></div>
-            <div class="clock" style="font-size:20px; color:var(--gold)">00:00:00</div>
+        <div class="info-bar" style="border-color: var(--red);">
+            <div>تقرير LS رقم: <span id="repNumLS" onclick="changeRepNum('LS')" style="color:var(--gold); cursor:pointer;">1</span></div>
+            <div class="clock">00:00:00</div>
         </div>
         <div class="main-controls">
             <div style="display:flex; gap:10px;">
-                <button class="btn-side" style="background:#27ae60; border:2px solid #fff;" onclick="shuffleField('LS')">🔄 عشوائي (ميداني)</button>
-                <button class="btn-side" style="background:#600" onclick="resetSys('LS')">⚠️ تصفير LS</button>
+                <button class="btn-side" style="background:#27ae60;" onclick="shuffleField('LS')">🔄 عشوائي الميدان</button>
+                <button class="btn-side" style="background:#600;" onclick="resetSys('LS')">⚠️ تصفير LS</button>
             </div>
-            <div id="lettersLS" class="letter-group"></div>
+            <div id="lettersLS" class="letter-group" style="display:flex; gap:5px;"></div>
             <div style="display:flex; align-items:center; gap:10px;">
                 <button class="btn-side" onclick="toggleDigits('LS')" id="digitBtnLS">3 أرقام</button>
-                <input type="text" id="inputLS" class="main-input" style="color:var(--red)" placeholder="000" maxlength="4" oninput="handleInput('LS', this)">
-                <button class="btn-side" style="color:var(--gold)" onclick="undo('LS')">تراجع ↩️</button>
-            </div>
-            <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
-                <button class="btn-side" onclick="manualAdd('LS','القيادة')">➕ قيادة</button>
-                <button class="btn-side" onclick="manualAdd('LS','اشراف عام')">➕ اشراف</button>
-                <button class="btn-side" onclick="manualAdd('LS','مشرف ميداني')">➕ مشرف</button>
-                <button class="btn-side" onclick="manualAdd('LS','وحدات البحث و الانقاذ')">➕ بحث</button>
-                <button class="btn-side" onclick="manualAdd('LS','الميناء')">➕ ميناء</button>
-                <button class="btn-side" onclick="manualAdd('LS','دعم')">➕ دعم</button>
+                <input type="text" id="inputLS" class="main-input" style="color:var(--red);" placeholder="000" maxlength="4" oninput="handleInput('LS', this)">
+                <button class="btn-side" onclick="undo('LS')">↩️ تراجع</button>
             </div>
         </div>
         <div class="grid" id="gridFieldLS"></div>
@@ -75,28 +64,20 @@
     </div>
 
     <div id="systemSB" class="system-container">
-        <div class="info-bar" style="border-bottom: 3px solid var(--blue);">
-            <div>تقرير SB رقم: <button onclick="changeRepNum('SB')" id="repNumSB" style="background:none; color:var(--gold); border:1px solid #444; padding:5px 15px; cursor:pointer;">1</button></div>
-            <div class="clock" style="font-size:20px; color:var(--gold)">00:00:00</div>
+        <div class="info-bar" style="border-color: var(--blue);">
+            <div>تقرير SB رقم: <span id="repNumSB" onclick="changeRepNum('SB')" style="color:var(--gold); cursor:pointer;">1</span></div>
+            <div class="clock">00:00:00</div>
         </div>
         <div class="main-controls">
             <div style="display:flex; gap:10px;">
-                <button class="btn-side" style="background:#27ae60; border:2px solid #fff;" onclick="shuffleField('SB')">🔄 عشوائي (ميداني)</button>
-                <button class="btn-side" style="background:#600" onclick="resetSys('SB')">⚠️ تصفير SB</button>
+                <button class="btn-side" style="background:#27ae60;" onclick="shuffleField('SB')">🔄 عشوائي الميدان</button>
+                <button class="btn-side" style="background:#600;" onclick="resetSys('SB')">⚠️ تصفير SB</button>
             </div>
-            <div id="lettersSB" class="letter-group"></div>
+            <div id="lettersSB" class="letter-group" style="display:flex; gap:5px;"></div>
             <div style="display:flex; align-items:center; gap:10px;">
                 <button class="btn-side" onclick="toggleDigits('SB')" id="digitBtnSB">3 أرقام</button>
-                <input type="text" id="inputSB" class="main-input" style="color:var(--blue)" placeholder="000" maxlength="4" oninput="handleInput('SB', this)">
-                <button class="btn-side" style="color:var(--gold)" onclick="undo('SB')">تراجع ↩️</button>
-            </div>
-            <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
-                <button class="btn-side" onclick="manualAdd('SB','القيادة')">➕ قيادة</button>
-                <button class="btn-side" onclick="manualAdd('SB','اشراف عام')">➕ اشراف</button>
-                <button class="btn-side" onclick="manualAdd('SB','مشرف ميداني')">➕ مشرف</button>
-                <button class="btn-side" onclick="manualAdd('SB','وحدات البحث و الانقاذ')">➕ بحث</button>
-                <button class="btn-side" onclick="manualAdd('SB','الميناء')">➕ ميناء</button>
-                <button class="btn-side" onclick="manualAdd('SB','دعم')">➕ دعم</button>
+                <input type="text" id="inputSB" class="main-input" style="color:var(--blue);" placeholder="000" maxlength="4" oninput="handleInput('SB', this)">
+                <button class="btn-side" onclick="undo('SB')">↩️ تراجع</button>
             </div>
         </div>
         <div class="grid" id="gridFieldSB"></div>
@@ -106,124 +87,151 @@
 </div>
 
 <div class="bottom-actions">
-    <button onclick="copyAction()" style="padding: 15px 100px; background:#218838; color:white; border-radius:10px; font-weight:bold; font-size:22px; cursor:pointer; border:none;">📋 نسخ التقرير</button>
+    <button onclick="copyAction()" style="padding:15px 100px; background:#218838; color:white; border-radius:10px; font-weight:bold; font-size:22px; cursor:pointer; border:none;">📋 نسخ التقرير</button>
 </div>
 
 <script>
     let currentSystem = 'LS';
-    const config = { LS: { let: 'E', digits: 3, history: [] }, SB: { let: 'E', digits: 3, history: [] } };
-    
-    let dataLS = { "القيادة":[], "اشراف عام":[], "مشرف ميداني":[], "العمليات":[], "نائب العمليات":[], "لام 1":[], "لام 2":[], "لام 3":[], "لام 4":[], "لام 5":[], "فرسان":[], "دعم":[], "الميناء":[], "وحدات البحث و الانقاذ":[], "تسجيل الخروج":[] };
-    let dataSB = { "القيادة":[], "اشراف عام":[], "مشرف ميداني":[], "العمليات":[], "نائب العمليات":[], "سين 1":[], "سين":[], "باء 1":[], "باء":[], "جيم 1":[], "جيم 2":[], "دعم":[], "الميناء":[], "وحدات البحث و الانقاذ":[], "تسجيل الخروج":[] };
+    const config = { LS: { let: 'E', dig: 3, hist: [] }, SB: { let: 'E', dig: 3, hist: [] } };
 
-    // خريطة الأولويات الصارمة حسب رسالتك بالحرف
-    const orderLS = [
-        "لام 2", "لام 4", "لام 3", "لام 1", "فرسان", // وحدات فردية
-        "لام 2", "لام 4", "لام 3", "لام 1",           // رفع للوحدة الثانية
-        "لام 2", "لام 4", "لام 1",                   // رفع للوحدة الثالثة
-        "لام 5",                                     // تفعيل لام 5
-        "لام 2", "لام 4", "لام 3", "لام 1", "لام 5", "فرسان" // تكرار الأولوية من البداية
-    ];
-
-    const orderSB = [
-        "سين 1", "باء 1", "سين", "جيم 1", "باء",      // جولة 1 (فردي)
-        "سين 1", "باء 1", "سين", "جيم 1", "باء",      // جولة 2 (ثنائي)
-        "سين 1", "باء 1", "سين", "جيم 1",             // جولة 3
-        "سين 1", "سين", "باء", "باء",                // جولة 4 (4 سين1، 4 سين، 4 باء)
-        "جيم 2", "جيم 2", "جيم 2",                   // جولة 5 (جيم 2 حتى 3 وحدات)
-        "سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2" // تكرار
-    ];
+    let dataLS = { "العمليات":[], "نائب العمليات":[], "لام 2":[], "لام 4":[], "لام 3":[], "لام 1":[], "فرسان":[], "لام 5":[], "القيادة":[], "اشراف عام":[], "مشرف ميداني":[], "وحدات البحث و الانقاذ":[], "الميناء":[], "دعم":[], "تسجيل الخروج":[] };
+    let dataSB = { "العمليات":[], "نائب العمليات":[], "سين 1":[], "باء 1":[], "سين":[], "جيم 1":[], "باء":[], "جيم 2":[], "القيادة":[], "اشراف عام":[], "مشرف ميداني":[], "وحدات البحث و الانقاذ":[], "الميناء":[], "دعم":[], "تسجيل الخروج":[] };
 
     function handleInput(sys, el) {
         el.value = el.value.replace(/[^0-9]/g, '');
-        let limit = (['M', 'F', 'A', 'S'].includes(config[sys].let)) ? 2 : config[sys].digits;
+        let limit = (['M', 'F', 'A', 'S'].includes(config[sys].let)) ? 2 : config[sys].dig;
         if (el.value.length >= limit) {
             let code = config[sys].let + "-" + el.value;
             let d = (sys === 'LS' ? dataLS : dataSB);
             let target = "";
-            
+
             if (d["العمليات"].length === 0) target = "العمليات";
             else if (d["نائب العمليات"].length === 0) target = "نائب العمليات";
             else {
-                let count = getFieldCount(sys);
-                let list = (sys === 'LS' ? orderLS : orderSB);
-                target = list[count] || list[list.length - 1];
+                target = (sys === 'LS') ? calculateLSPrio(d) : calculateSBPrio(d);
             }
+
             d[target].push(code);
-            config[sys].history.push({t: target, c: code});
+            config[sys].hist.push({t: target, c: code});
             el.value = ''; render(sys);
         }
     }
 
-    function getFieldCount(sys) {
-        let d = (sys === 'LS' ? dataLS : dataSB);
-        let ks = (sys === 'LS') ? ["لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["سين 1", "سين", "باء 1", "باء", "جيم 1", "جيم 2"];
-        return ks.reduce((a, k) => a + d[k].length, 0);
+    function calculateLSPrio(d) {
+        // القاعدة: لام 2، 4، 3، 1، فرسان (وحدة لكل)
+        if (d["لام 2"].length < 1) return "لام 2";
+        if (d["لام 4"].length < 1) return "لام 4";
+        if (d["لام 3"].length < 1) return "لام 3";
+        if (d["لام 1"].length < 1) return "لام 1";
+        if (d["فرسان"].length < 1) return "فرسان";
+        
+        // القاعدة: رفع (2، 4، 3، 1) إلى وحدتين
+        if (d["لام 2"].length < 2) return "لام 2";
+        if (d["لام 4"].length < 2) return "لام 4";
+        if (d["لام 3"].length < 2) return "لام 3";
+        if (d["لام 1"].length < 2) return "لام 1";
+
+        // القاعدة: رفع (2، 4، 1) إلى 3 وحدات
+        if (d["لام 2"].length < 3) return "لام 2";
+        if (d["لام 4"].length < 3) return "لام 4";
+        if (d["لام 1"].length < 3) return "لام 1";
+
+        // القاعدة: لام 5 (أول وحدة)
+        if (d["لام 5"].length < 1) return "لام 5";
+
+        // العودة للبداية
+        return "لام 2";
+    }
+
+    function calculateSBPrio(d) {
+        // المرحلة 1: سين 1، باء 1، سين، جيم 1، باء (وحدة لكل)
+        if (d["سين 1"].length < 1) return "سين 1";
+        if (d["باء 1"].length < 1) return "باء 1";
+        if (d["سين"].length < 1) return "سين";
+        if (d["جيم 1"].length < 1) return "جيم 1";
+        if (d["باء"].length < 1) return "باء";
+
+        // المرحلة 2: الجميع إلى وحدتين
+        if (d["سين 1"].length < 2) return "سين 1";
+        if (d["باء 1"].length < 2) return "باء 1";
+        if (d["سين"].length < 2) return "سين";
+        if (d["جيم 1"].length < 2) return "جيم 1";
+        if (d["باء"].length < 2) return "باء";
+
+        // المرحلة 3: (سين 1، باء 1، سين، جيم 1) إلى 3 وحدات
+        if (d["سين 1"].length < 3) return "سين 1";
+        if (d["باء 1"].length < 3) return "باء 1";
+        if (d["سين"].length < 3) return "سين";
+        if (d["جيم 1"].length < 3) return "جيم 1";
+
+        // المرحلة 4: سين 1 و سين إلى 4، وباء إلى 3 ثم 4
+        if (d["سين 1"].length < 4) return "سين 1";
+        if (d["سين"].length < 4) return "سين";
+        if (d["باء"].length < 3) return "باء";
+        if (d["باء"].length < 4) return "باء";
+
+        // المرحلة 5: جيم 2 تفتح الآن
+        if (d["جيم 2"].length < 3) return "جيم 2";
+
+        return "سين 1";
     }
 
     function autoBalance(sys) {
         let d = (sys === 'LS' ? dataLS : dataSB);
-        let ks = (sys === 'LS') ? ["لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["سين 1", "سين", "باء 1", "باء", "جيم 1", "جيم 2"];
-        let pool = []; ks.forEach(k => { pool.push(...d[k]); d[k] = []; });
-        let list = (sys === 'LS' ? orderLS : orderSB);
-        pool.forEach((c, i) => { let t = list[i] || list[list.length - 1]; d[t].push(c); });
-        render(sys);
-    }
-
-    function shuffleField(sys) {
-        let d = (sys === 'LS' ? dataLS : dataSB);
-        let ks = (sys === 'LS') ? ["لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["سين 1", "سين", "باء 1", "باء", "جيم 1", "جيم 2"];
-        let pool = []; let counts = {};
-        ks.forEach(k => { counts[k] = d[k].length; pool.push(...d[k]); d[k] = []; });
-        pool.sort(() => Math.random() - 0.5);
-        ks.forEach(k => { for(let i=0; i<counts[k]; i++) { if(pool.length) d[k].push(pool.shift()); } });
+        let keys = (sys === 'LS') ? ["لام 2", "لام 4", "لام 3", "لام 1", "فرسان", "لام 5"] : ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"];
+        let pool = [];
+        keys.forEach(k => { pool.push(...d[k]); d[k] = []; });
+        pool.forEach(code => {
+            let target = (sys === 'LS') ? calculateLSPrio(d) : calculateSBPrio(d);
+            d[target].push(code);
+        });
         render(sys);
     }
 
     function render(sys) {
         const d = (sys === 'LS' ? dataLS : dataSB);
-        const fld = (sys === 'LS') ? ["العمليات", "نائب العمليات", "لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["العمليات", "نائب العمليات", "سين 1", "سين", "باء 1", "باء", "جيم 1", "جيم 2"];
-        const adm = ["القيادة", "اشراف عام", "مشرف ميداني", "وحدات البحث و الانقاذ", "الميناء", "دعم"];
-        const draw = (k) => {
-            let cl = ["القيادة","اشراف عام","مشرف ميداني"].includes(k) ? 'card-purple' : (["وحدات البحث و الانقاذ","الميناء","دعم"].includes(k) ? 'card-white' : '');
-            let tags = d[k].map((u, i) => `<div class="tag">${u}<div class="tag-menu"><div onclick="move('${sys}','${k}',${i})">➡️ خروج</div><div onclick="del('${sys}','${k}',${i})">❌ حذف</div></div></div>`).join('');
-            return `<div class="card ${cl}"><div class="card-header ${(sys==='LS'?'ls-header':'sb-header')}">${k}</div><div class="card-body">${tags}</div></div>`;
+        const fldKeys = (sys === 'LS') ? ["العمليات", "نائب العمليات", "لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["العمليات", "نائب العمليات", "سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"];
+        const admKeys = ["القيادة", "اشراف عام", "مشرف ميداني", "وحدات البحث و الانقاذ", "الميناء", "دعم"];
+        
+        const drawCard = (k) => {
+            let type = admKeys.slice(0,3).includes(k) ? 'card-purple' : (admKeys.slice(3).includes(k) ? 'card-white' : '');
+            let tags = d[k].map((u, i) => `<div class="tag">${u}<div class="tag-menu"><div onclick="moveOut('${sys}','${k}',${i})">➡️ خروج</div><div onclick="deleteUnit('${sys}','${k}',${i})">❌ حذف</div></div></div>`).join('');
+            return `<div class="card ${type}"><div class="card-header ${(sys==='LS'?'ls-header':'sb-header')}">${k}</div><div class="card-body">${tags}</div></div>`;
         };
-        document.getElementById(`gridField${sys}`).innerHTML = fld.map(draw).join('');
-        document.getElementById(`gridAdmin${sys}`).innerHTML = adm.map(draw).join('');
-        document.getElementById(`gridExit${sys}`).innerHTML = draw("تسجيل الخروج");
-        localStorage.setItem('ems_save_'+sys, JSON.stringify(d));
+
+        document.getElementById(`gridField${sys}`).innerHTML = fldKeys.map(drawCard).join('');
+        document.getElementById(`gridAdmin${sys}`).innerHTML = admKeys.map(drawCard).join('');
+        document.getElementById(`gridExit${sys}`).innerHTML = drawCard("تسجيل الخروج");
+        localStorage.setItem('ems_db_'+sys, JSON.stringify(d));
     }
 
-    function move(sys, k, i) { (sys==='LS'?dataLS:dataSB)["تسجيل الخروج"].push((sys==='LS'?dataLS:dataSB)[k].splice(i, 1)[0]); if(!["القيادة","اشراف عام","مشرف ميداني","دعم","تسجيل الخروج"].includes(k)) autoBalance(sys); else render(sys); }
-    function del(sys, k, i) { (sys==='LS'?dataLS:dataSB)[k].splice(i, 1); if(!["القيادة","اشراف عام","مشرف ميداني","دعم","تسجيل الخروج"].includes(k)) autoBalance(sys); else render(sys); }
-    function undo(sys) { if(config[sys].history.length > 0) { let last = config[sys].history.pop(); (sys==='LS'?dataLS:dataSB)[last.t].pop(); render(sys); } }
-    function toggleDigits(sys) { config[sys].digits = (config[sys].digits===3?4:3); document.getElementById(`digitBtnLS`).innerText = config[sys].digits + " أرقام"; document.getElementById(`digitBtnSB`).innerText = config[sys].digits + " أرقام"; }
-    function changeRepNum(sys) { let n = prompt("رقم التقرير:"); if(n) document.getElementById(`repNum${sys}`).innerText = n; }
-    function manualAdd(sys, k) { let n = prompt("رقم الكود:"); if(n) { (sys==='LS'?dataLS:dataSB)[k].push(config[sys].let + "-" + n); render(sys); } }
-    function resetSys(sys) { if(confirm("تصفير؟")) { localStorage.removeItem('ems_save_'+sys); location.reload(); }}
+    function moveOut(sys, k, i) { (sys==='LS'?dataLS:dataSB)["تسجيل الخروج"].push((sys==='LS'?dataLS:dataSB)[k].splice(i, 1)[0]); autoBalance(sys); }
+    function deleteUnit(sys, k, i) { (sys==='LS'?dataLS:dataSB)[k].splice(i, 1); autoBalance(sys); }
+    function undo(sys) { if(config[sys].hist.length) { let l = config[sys].hist.pop(); (sys==='LS'?dataLS:dataSB)[l.t].pop(); render(sys); } }
     function switchSystem(sys) { currentSystem = sys; document.querySelectorAll('.system-container').forEach(c => c.classList.remove('active')); document.getElementById(`system${sys}`).classList.add('active'); document.getElementById('lsTabBtn').classList.toggle('active', sys==='LS'); document.getElementById('sbTabBtn').classList.toggle('active', sys==='SB'); }
+    function shuffleField(sys) { let d=(sys==='LS'?dataLS:dataSB); let ks=(sys==='LS')?["لام 1","لام 2","لام 3","لام 4","لام 5","فرسان"]:["سين 1","باء 1","سين","جيم 1","باء","جيم 2"]; let p=[]; let cs={}; ks.forEach(k=>{cs[k]=d[k].length; p.push(...d[k]); d[k]=[];}); p.sort(()=>Math.random()-0.5); ks.forEach(k=>{for(let i=0;i<cs[k];i++) if(p.length) d[k].push(p.shift());}); render(sys); }
+    function toggleDigits(sys) { config[sys].dig = (config[sys].dig===3?4:3); document.getElementById(`digitBtn${sys}`).innerText = config[sys].dig + " أرقام"; }
+    function changeRepNum(sys) { let n = prompt("رقم التقرير:"); if(n) document.getElementById(`repNum${sys}`).innerText = n; }
+    function resetSys(sys) { if(confirm("تصفير؟")) { localStorage.removeItem('ems_db_'+sys); location.reload(); }}
 
     function copyAction() {
-        const sys = currentSystem; const d = (sys==='LS'?dataLS:dataSB); const rNum = document.getElementById(`repNum${sys}`).innerText;
-        const now = new Date(); const days = ["الأحد", "الأثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
-        const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }).replace('AM', 'ص').replace('PM', 'م');
-        let txt = `تم تحديث تقرير عمليات ( ${sys==='LS'?'لوس سانتوس':'ساندي وبوليتو'} ) رقم ( ${rNum} ) في تمام الساعة ( ${timeStr} ) في يوم ( ${days[now.getDay()]} ) التاريخ ${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}\n\n`;
-        const ks = (sys==='LS')?["القيادة","اشراف عام","مشرف ميداني","العمليات","نائب العمليات","لام 1","لام 2","لام 3","لام 4","لام 5","فرسان","دعم","الميناء","وحدات البحث و الانقاذ","تسجيل الخروج"]:["القيادة","اشراف عام","مشرف ميداني","العمليات","نائب العمليات","سين 1","سين","باء 1","باء","جيم 1","جيم 2","دعم","الميناء","وحدات البحث و الانقاذ","تسجيل الخروج"];
-        ks.forEach(k => { let units = d[k].length ? (k.includes("العمليات")?d[k].join(" | "):d[k].join("\n")) : "E-000"; txt += `${k} :\n${units}\n\n`; });
+        const sys = currentSystem; const d = (sys==='LS'?dataLS:dataSB); const r = document.getElementById(`repNum${sys}`).innerText;
+        const now = new Date(); const days = ["الأحد","الأثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+        let txt = `تقرير عمليات ( ${sys==='LS'?'لوس سانتوس':'ساندي وبوليتو'} ) رقم ( ${r} )\nاليوم: ${days[now.getDay()]} | الوقت: ${now.toLocaleTimeString()}\n\n`;
+        const ks = Object.keys(d);
+        ks.forEach(k => { let u = d[k].length ? (k.includes("العمليات")?d[k].join(" | "):d[k].join("\n")) : "E-000"; txt += `${k} :\n${u}\n\n`; });
         navigator.clipboard.writeText(txt).then(() => alert("✅ تم النسخ"));
     }
 
     ['LS', 'SB'].forEach(sys => {
-        const lets = ['E','A','F','M','S','C','G','P','H'];
-        lets.forEach(l => {
+        ['E','A','F','M','S','C','G','P','H'].forEach(l => {
             let b = document.createElement('button'); b.className = 'let-btn' + (l === 'E' ? ` active-${sys.toLowerCase()}` : ''); b.innerText = l;
             b.onclick = () => { config[sys].let = l; document.querySelectorAll(`#letters${sys} .let-btn`).forEach(x => x.classList.remove(`active-ls`,`active-sb`)); b.classList.add(`active-${sys.toLowerCase()}`); };
             document.getElementById(`letters${sys}`).appendChild(b);
         });
-        const saved = JSON.parse(localStorage.getItem('ems_save_'+sys)); if(saved) { if(sys==='LS') dataLS = saved; else dataSB = saved; }
+        const saved = JSON.parse(localStorage.getItem('ems_db_'+sys)); if(saved) { if(sys==='LS') dataLS = saved; else dataSB = saved; }
     });
-    setInterval(() => { document.querySelectorAll('.clock').forEach(c => c.innerText = new Date().toLocaleTimeString('en-US', {hour12: false})); }, 1000);
+    setInterval(() => { document.querySelectorAll('.clock').forEach(c => c.innerText = new Date().toLocaleTimeString('en-US',{hour12:false})); }, 1000);
     render('LS'); render('SB');
 </script>
 </body>
