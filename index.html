@@ -2,229 +2,184 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>نظام توزيع العمليات المطور</title>
+    <title>نظام الطوارئ المنفصل - التوزيع الدقيق</title>
     <style>
-        :root { --red: #b32633; --blue: #0056b3; --gold: #ffd700; --bg: #0a0a0a; --purple: #6a1b9a; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #111; color: white; margin: 0; padding: 10px; }
-        .container { max-width: 1200px; margin: auto; background: rgba(0,0,0,0.9); padding: 20px; border-radius: 15px; border: 1px solid #333; }
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab-btn { flex: 1; padding: 15px; font-size: 20px; font-weight: bold; cursor: pointer; border: none; border-radius: 8px; background: #333; color: white; }
-        .tab-btn.active-ls { background: var(--red); box-shadow: 0 0 10px var(--red); }
-        .tab-btn.active-sb { background: var(--blue); box-shadow: 0 0 10px var(--blue); }
+        :root { --ls-red: #b32633; --sb-blue: #0056b3; --gold: #ffd700; --bg: #0a0a0a; --card-bg: #161616; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #000; color: white; margin: 0; padding: 0; overflow-x: hidden; }
+        .system-header { display: flex; width: 100%; height: 60px; border-bottom: 2px solid #333; }
+        .nav-btn { flex: 1; border: none; cursor: pointer; font-size: 20px; font-weight: bold; color: #888; background: #111; transition: 0.3s; }
+        .nav-btn.active-ls { background: var(--ls-red); color: white; }
+        .nav-btn.active-sb { background: var(--sb-blue); color: white; }
         
-        .main-input-area { background: #222; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px; }
-        .input-box { font-size: 40px; width: 150px; text-align: center; background: #000; color: var(--gold); border: 2px solid #444; border-radius: 10px; margin: 10px; }
-        .letter-btn { width: 50px; height: 50px; margin: 2px; cursor: pointer; background: #444; color: white; border: none; border-radius: 5px; font-weight: bold; }
-        .letter-btn.active { background: var(--gold); color: black; }
+        .main-content { padding: 20px; display: none; }
+        .main-content.active { display: block; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
-        .card { background: #1a1a1a; border-radius: 8px; overflow: hidden; border: 1px solid #333; }
-        .card-header { padding: 10px; text-align: center; font-weight: bold; font-size: 14px; background: #333; }
-        .ls-h { background: var(--red); }
-        .sb-h { background: var(--blue); }
-        .card-body { padding: 10px; min-height: 50px; display: flex; flex-wrap: wrap; gap: 5px; }
-        .unit-tag { background: #000; padding: 5px 10px; border-radius: 4px; font-size: 13px; border: 1px solid #444; position: relative; cursor: pointer; }
+        .control-panel { background: #111; padding: 20px; border-radius: 15px; border: 1px solid #333; margin-bottom: 25px; text-align: center; }
+        .letter-row { margin-bottom: 15px; display: flex; justify-content: center; gap: 5px; flex-wrap: wrap; }
+        .l-btn { width: 45px; height: 45px; border-radius: 8px; border: 1px solid #444; background: #222; color: white; font-weight: bold; cursor: pointer; }
+        .l-btn.active { background: var(--gold); color: black; border-color: white; }
         
-        .copy-btn { width: 100%; padding: 20px; background: #28a745; color: white; font-size: 22px; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; margin-top: 20px; }
+        .big-input { font-size: 60px; width: 220px; text-align: center; background: #000; color: white; border: 3px solid #444; border-radius: 15px; outline: none; }
+        .ls-input { border-color: var(--ls-red); color: var(--ls-red); }
+        .sb-input { border-color: var(--sb-blue); color: var(--sb-blue); }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+        .card { background: var(--card-bg); border-radius: 10px; border: 1px solid #333; min-height: 120px; }
+        .card-h { padding: 10px; text-align: center; font-weight: bold; font-size: 15px; background: #222; border-bottom: 1px solid #333; }
+        .ls-card-h { border-top: 4px solid var(--ls-red); }
+        .sb-card-h { border-top: 4px solid var(--sb-blue); }
+        .card-b { padding: 10px; display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+        
+        .unit { background: #000; border: 1px solid #444; padding: 5px 12px; border-radius: 5px; font-weight: bold; font-size: 14px; cursor: pointer; }
+        .unit:hover { border-color: red; }
+
+        .footer { position: fixed; bottom: 0; width: 100%; background: #050505; padding: 15px; border-top: 2px solid #333; display: flex; justify-content: center; gap: 20px; }
+        .action-btn { padding: 12px 40px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; font-size: 18px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="tabs">
-        <button id="btnLS" class="tab-btn active-ls" onclick="setMode('LS')">لوس سانتوس</button>
-        <button id="btnSB" class="tab-btn" onclick="setMode('SB')">ساندي وبوليتو</button>
-    </div>
+<div class="system-header">
+    <button id="lsTab" class="nav-btn active-ls" onclick="switchSys('LS')">نظام لوس سانتوس (LS)</button>
+    <button id="sbTab" class="nav-btn" onclick="switchSys('SB')">نظام ساندي وبوليتو (SB)</button>
+</div>
 
-    <div class="main-input-area">
-        <div id="letters"></div>
-        <input type="text" id="codeIn" class="input-box" placeholder="000" maxlength="4">
-        <div style="margin-top: 10px;">
-            <button onclick="undo()" style="padding:10px 20px;">تراجع ↩️</button>
-            <button onclick="resetData()" style="padding:10px 20px; background:#600; color:white;">تصفير التقرير ⚠️</button>
+<div id="lsContent" class="main-content active">
+    <div class="control-panel">
+        <div class="letter-row" id="lsLetters"></div>
+        <input type="text" id="lsIn" class="big-input ls-input" placeholder="000" maxlength="4">
+        <div style="margin-top: 15px;">
+            <button class="action-btn" style="background:#444; color:white;" onclick="undo('LS')">تراجع ↩️</button>
+            <button class="action-btn" style="background:#600; color:white;" onclick="resetSys('LS')">تصفير لوس ⚠️</button>
         </div>
     </div>
+    <div class="grid" id="lsGrid"></div>
+</div>
 
-    <div id="displayArea" class="grid"></div>
+<div id="sbContent" class="main-content">
+    <div class="control-panel">
+        <div class="letter-row" id="sbLetters"></div>
+        <input type="text" id="sbIn" class="big-input sb-input" placeholder="000" maxlength="4">
+        <div style="margin-top: 15px;">
+            <button class="action-btn" style="background:#444; color:white;" onclick="undo('SB')">تراجع ↩️</button>
+            <button class="action-btn" style="background:#600; color:white;" onclick="resetSys('SB')">تصفير ساندي ⚠️</button>
+        </div>
+    </div>
+    <div class="grid" id="sbGrid"></div>
+</div>
 
-    <button class="copy-btn" onclick="copyReport()">📋 نسخ التقرير</button>
+<div class="footer">
+    <button class="action-btn" style="background: #28a745; color: white;" onclick="copyRep()">📋 نسخ التقرير الحالي</button>
 </div>
 
 <script>
-    let mode = 'LS';
-    let activeLetter = 'E';
-    let history = [];
+    let activeSys = 'LS';
+    let letters = { LS: 'E', SB: 'E' };
+    let history = { LS: [], SB: [] };
 
     const keysLS = ["العمليات", "نائب العمليات", "لام 2", "لام 4", "لام 3", "لام 1", "فرسان", "لام 5", "دعم", "الميناء", "وحدات البحث و الانقاذ", "قيادة", "اشراف عام", "مشرف ميداني", "تسجيل خروج"];
     const keysSB = ["العمليات", "نائب العمليات", "سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2", "دعم", "الميناء", "وحدات البحث و الانقاذ", "قيادة", "اشراف عام", "مشرف ميداني", "تسجيل خروج"];
 
-    let data = { LS: {}, SB: {} };
-    keysLS.forEach(k => data.LS[k] = []);
-    keysSB.forEach(k => data.SB[k] = []);
+    let dataLS = {}; keysLS.forEach(k => dataLS[k] = []);
+    let dataSB = {}; keysSB.forEach(k => dataSB[k] = []);
 
-    // --- منطق توزيع لوس سانتوس الحرفي ---
-    function getTargetLS() {
-        let d = data.LS;
-        if (d["العمليات"].length === 0) return "العمليات";
-        if (d["نائب العمليات"].length === 0) return "نائب العمليات";
+    // --- منطق توزيع لوس (مستقل) ---
+    function getLsTarget() {
+        if (dataLS["العمليات"].length === 0) return "العمليات";
+        if (dataLS["نائب العمليات"].length === 0) return "نائب العمليات";
+        let l1 = dataLS["لام 1"].length, l2 = dataLS["لام 2"].length, l3 = dataLS["لام 3"].length, l4 = dataLS["لام 4"].length, l5 = dataLS["لام 5"].length, f = dataLS["فرسان"].length;
+        let sum = l1+l2+l3+l4+f;
 
-        let l2 = d["لام 2"].length, l4 = d["لام 4"].length, l3 = d["لام 3"].length, l1 = d["لام 1"].length, f = d["فرسان"].length, l5 = d["لام 5"].length;
-        let total = l2 + l4 + l3 + l1 + f + l5;
-
-        // الحالة 1: 5 وحدات فقط (وحدة لكل منطقة)
-        if (total < 5) {
-            if (l2 < 1) return "لام 2";
-            if (l4 < 1) return "لام 4";
-            if (l3 < 1) return "لام 3";
-            if (l1 < 1) return "لام 1";
-            if (f < 1) return "فرسان";
-        }
-        // الحالة 2: الوحدة السادسة تذهب لـ لام 2 (تصبح 2)
-        if (total === 5) return "لام 2";
-        // الحالة 3: الوحدة السابعة تذهب لـ لام 4 (تصبح 2)
-        if (total === 6) return "لام 4";
-        // الحالة 4: الوحدة الثامنة تذهب لـ لام 3 (تصبح 2)
-        if (total === 7) return "لام 3";
-        // الحالة 5: الوحدة التاسعة تذهب لـ لام 1 (تصبح 2)
-        if (total === 8) return "لام 1";
-        // الحالة 6: الوحدة العاشرة تذهب لـ لام 2 (تصبح 3)
-        if (total === 9) return "لام 2";
-        // الحالة 7: الوحدة الحادية عشر تذهب لـ لام 4 (تصبح 3)
-        if (total === 10) return "لام 4";
-        // الحالة 8: الوحدة الثانية عشر تذهب لـ لام 1 (تصبح 3)
-        if (total === 11) return "لام 1";
-        // الحالة 9: الوحدة الثالثة عشر تذهب لـ لام 5
-        if (total === 12) return "لام 5";
-
-        return "لام 2"; // الافتراضي بعد ذلك
+        if (l2<1) return "لام 2"; if (l4<1) return "لام 4"; if (l3<1) return "لام 3"; if (l1<1) return "لام 1"; if (f<1) return "فرسان";
+        if (l2<2) return "لام 2"; if (l4<2) return "لام 4"; if (l3<2) return "لام 3"; if (l1<2) return "لام 1";
+        if (l2<3) return "لام 2"; if (l4<3) return "لام 4"; if (l1<3) return "لام 1";
+        if (l5<1) return "لام 5";
+        return "لام 2";
     }
 
-    // --- منطق توزيع ساندي وبوليتو الحرفي ---
-    function getTargetSB() {
-        let d = data.SB;
-        if (d["العمليات"].length === 0) return "العمليات";
-        if (d["نائب العمليات"].length === 0) return "نائب العمليات";
+    // --- منطق توزيع ساندي (مستقل) ---
+    function getSbTarget() {
+        if (dataSB["العمليات"].length === 0) return "العمليات";
+        if (dataSB["نائب العمليات"].length === 0) return "نائب العمليات";
+        let s1 = dataSB["سين 1"].length, b1 = dataSB["باء 1"].length, s = dataSB["سين"].length, g1 = dataSB["جيم 1"].length, b = dataSB["باء"].length, g2 = dataSB["جيم 2"].length;
+        let sum = s1+b1+s+g1+b;
 
-        let s1 = d["سين 1"].length, b1 = d["باء 1"].length, s = d["سين"].length, g1 = d["جيم 1"].length, b = d["باء"].length, g2 = d["جيم 2"].length;
-        let total = s1 + b1 + s + g1 + b + g2;
-
-        // الحالة 1: توزيع البداية (وحدة واحدة لكل منطقة ما عدا جيم 2)
-        if (total < 5) {
-            if (s1 < 1) return "سين 1";
-            if (b1 < 1) return "باء 1";
-            if (s < 1) return "سين";
-            if (g1 < 1) return "جيم 1";
-            if (b < 1) return "باء";
-        }
-        // التسلسل حسب نصك:
-        if (total === 5) return "سين 1"; // تصبح سين 1 وحدتين
-        if (total === 6) return "باء 1"; // تصبح باء 1 وحدتين
-        if (total === 7) return "سين";   // تصبح سين وحدتين
-        if (total === 8) return "جيم 1"; // تصبح جيم 1 وحدتين
-        if (total === 9) return "باء";   // تصبح باء وحدتين
-        if (total === 10) return "سين 1"; // تصبح سين 1 ثلاث وحدات
-        if (total === 11) return "باء 1"; // تصبح باء 1 ثلاث وحدات
-        if (total === 12) return "سين";   // تصبح سين ثلاث وحدات
-        if (total === 13) return "جيم 1"; // تصبح جيم 1 ثلاث وحدات
-        if (total === 14) return "سين 1"; // تصبح سين 1 أربع وحدات
-        if (total === 15) return "سين";   // تصبح سين أربع وحدات
-        if (total === 16) return "باء";   // تصبح باء ثلاث وحدات (حسب النص)
-        if (total === 17) return "باء";   // تصبح باء أربع وحدات
-        if (total >= 18 && total <= 20) return "جيم 2"; // من وحدة إلى ثلاث
-
+        if (s1<1) return "سين 1"; if (b1<1) return "باء 1"; if (s<1) return "سين"; if (g1<1) return "جيم 1"; if (b<1) return "باء";
+        if (s1<2) return "سين 1"; if (b1<2) return "باء 1"; if (s<2) return "سين"; if (g1<2) return "جيم 1"; if (b<2) return "باء";
+        if (s1<3) return "سين 1"; if (b1<3) return "باء 1"; if (s<3) return "سين"; if (g1<3) return "جيم 1";
+        if (s1<4) return "سين 1"; if (s<4) return "سين"; if (b<3) return "باء"; if (b<4) return "باء";
+        if (g2<3) return "جيم 2";
         return "سين 1";
     }
 
-    function setMode(m) {
-        mode = m;
-        document.getElementById('btnLS').className = 'tab-btn' + (m==='LS'?' active-ls':'');
-        document.getElementById('btnSB').className = 'tab-btn' + (m==='SB'?' active-sb':'');
-        render();
-    }
-
-    document.getElementById('codeIn').addEventListener('input', function(e) {
-        let val = e.target.value.replace(/\D/g, '');
+    function handleInput(sys, val) {
         if (val.length >= 3) {
-            let fullCode = activeLetter + "-" + val;
-            let target = (mode === 'LS') ? getTargetLS() : getTargetSB();
+            let full = letters[sys] + "-" + val;
+            let target = (sys === 'LS' ? getLsTarget() : getSbTarget());
+            let d = (sys === 'LS' ? dataLS : dataSB);
             
-            // منع التكرار (استثناء القيادة)
             let exists = false;
-            for(let k in data[mode]) if(data[mode][k].includes(fullCode)) exists = true;
-            if(exists && !["قيادة", "اشراف عام", "مشرف ميداني"].includes(target)) {
-                alert("الكود مسجل مسبقاً!");
+            for(let k in d) if(d[k].includes(full)) exists = true;
+            if(exists && !["قيادة","اشراف عام","مشرف ميداني"].includes(target)) {
+                alert("الكود مكرر!");
             } else {
-                data[mode][target].push(fullCode);
-                history.push({mode: mode, target: target});
+                d[target].push(full);
+                history[sys].push(target);
             }
-            e.target.value = '';
+            document.getElementById(sys === 'LS' ? 'lsIn' : 'sbIn').value = '';
             render();
         }
-    });
+    }
+
+    document.getElementById('lsIn').oninput = (e) => handleInput('LS', e.target.value.replace(/\D/g,''));
+    document.getElementById('sbIn').oninput = (e) => handleInput('SB', e.target.value.replace(/\D/g,''));
 
     function render() {
-        const area = document.getElementById('displayArea');
-        area.innerHTML = '';
-        const currentData = data[mode];
-        const currentKeys = (mode === 'LS') ? keysLS : keysSB;
-
-        currentKeys.forEach(k => {
-            let card = document.createElement('div');
-            card.className = 'card';
-            let headerClass = (mode === 'LS') ? 'ls-h' : 'sb-h';
-            card.innerHTML = `<div class="card-header ${headerClass}">${k}</div><div class="card-body"></div>`;
-            currentData[k].forEach((u, index) => {
-                let tag = document.createElement('div');
-                tag.className = 'unit-tag';
-                tag.innerText = u;
-                tag.onclick = () => { if(confirm("حذف الوحدة؟")) { currentData[k].splice(index,1); render(); } };
-                card.querySelector('.card-body').appendChild(tag);
-            });
-            area.appendChild(card);
+        // رندر لوس
+        let lsG = document.getElementById('lsGrid'); lsG.innerHTML = '';
+        keysLS.forEach(k => {
+            lsG.innerHTML += `<div class="card"><div class="card-h ls-card-h">${k}</div><div class="card-b">${dataLS[k].map((u,i)=>`<div class="unit" onclick="delUnit('LS','${k}',${i})">${u}</div>`).join('')}</div></div>`;
+        });
+        // رندر ساندي
+        let sbG = document.getElementById('sbGrid'); sbG.innerHTML = '';
+        keysSB.forEach(k => {
+            sbG.innerHTML += `<div class="card"><div class="card-h sb-card-h">${k}</div><div class="card-b">${dataSB[k].map((u,i)=>`<div class="unit" onclick="delUnit('SB','${k}',${i})">${u}</div>`).join('')}</div></div>`;
         });
     }
 
-    function undo() {
-        if(history.length > 0) {
-            let last = history.pop();
-            data[last.mode][last.target].pop();
-            render();
-        }
+    function switchSys(sys) {
+        activeSys = sys;
+        document.getElementById('lsContent').classList.toggle('active', sys==='LS');
+        document.getElementById('sbContent').classList.toggle('active', sys==='SB');
+        document.getElementById('lsTab').className = 'nav-btn' + (sys==='LS'?' active-ls':'');
+        document.getElementById('sbTab').className = 'nav-btn' + (sys==='SB'?' active-sb':'');
     }
 
-    function resetData() {
-        if(confirm("هل أنت متأكد من مسح جميع البيانات؟")) location.reload();
-    }
+    function delUnit(sys,k,i) { if(confirm("حذف؟")) { (sys==='LS'?dataLS:dataSB)[k].splice(i,1); render(); } }
+    function undo(sys) { if(history[sys].length) { let t = history[sys].pop(); (sys==='LS'?dataLS:dataSB)[t].pop(); render(); } }
+    function resetSys(sys) { if(confirm("تصفير هذا القسم فقط؟")) { let d = (sys==='LS'?dataLS:dataSB); for(let k in d) d[k]=[]; history[sys]=[]; render(); } }
 
-    function copyReport() {
-        let report = `تقرير عمليات (${mode === 'LS' ? 'لوس سانتوس' : 'ساندي وبوليتو'})\n\n`;
-        const currentKeys = (mode === 'LS') ? keysLS : keysSB;
-        currentKeys.forEach(k => {
-            let units = data[mode][k].length > 0 ? data[mode][k].join('\n') : "E-000";
-            if (k === "العمليات" || k === "نائب العمليات") units = data[mode][k].join(' | ') || "E-000";
-            report += `${k} :\n${units}\n\n`;
+    function copyRep() {
+        let sys = activeSys; let d = (sys==='LS'?dataLS:dataSB); let ks = (sys==='LS'?keysLS:keysSB);
+        let txt = `تقرير عمليات (${sys==='LS'?'لوس سانتوس':'ساندي وبوليتو'})\n\n`;
+        ks.forEach(k => {
+            let units = d[k].length ? ( (k.includes("العمليات")) ? d[k].join(' | ')+" |" : d[k].join('\n') ) : "E-000";
+            txt += `${k} :\n${units}\n\n`;
         });
-        navigator.clipboard.writeText(report);
-        alert("✅ تم نسخ التقرير بنجاح");
+        navigator.clipboard.writeText(txt); alert("تم النسخ بنجاح");
     }
 
-    // إنشاء أزرار الحروف
-    const alpha = ['E', 'A', 'F', 'M', 'S', 'C', 'G', 'P', 'H'];
-    const lettersDiv = document.getElementById('letters');
-    alpha.forEach(l => {
-        let b = document.createElement('button');
-        b.className = 'letter-btn' + (l === 'E' ? ' active' : '');
-        b.innerText = l;
-        b.onclick = () => {
-            activeLetter = l;
-            document.querySelectorAll('.letter-btn').forEach(x => x.classList.remove('active'));
-            b.classList.add('active');
-        };
-        lettersDiv.appendChild(b);
+    // بناء الحروف لكل قسم
+    ['LS','SB'].forEach(sys => {
+        let div = document.getElementById(sys.toLowerCase()+'Letters');
+        ['E','A','F','M','S','C','G','P','H'].forEach(l => {
+            let b = document.createElement('button'); b.className = 'l-btn' + (l==='E'?' active':''); b.innerText = l;
+            b.onclick = () => { letters[sys] = l; div.querySelectorAll('.l-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); };
+            div.appendChild(b);
+        });
     });
 
     render();
 </script>
-
 </body>
 </html>
