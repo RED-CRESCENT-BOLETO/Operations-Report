@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>EMS SYSTEM - PRECISION DISTRIBUTION V20</title>
+    <title>EMS SYSTEM - PRECISION FINAL</title>
     <style>
         :root { --red: #b32633; --blue: #0056b3; --gold: #ffd700; --bg: #0a0a0a; --purple: #6a1b9a; --white: #ffffff; }
         body { font-family: 'Segoe UI', sans-serif; background: #111 url('https://i.top4top.io/p_3592jzcr01.jpg') no-repeat center center fixed; background-size: cover; color: white; margin: 0; padding: 10px; padding-bottom: 120px; }
@@ -32,7 +32,6 @@
         .tag-menu { display: none; position: absolute; top: 100%; right: 0; background: #222; z-index: 100; border: 1px solid #555; width: 120px; }
         .tag:hover .tag-menu { display: block; }
         .tag-menu div { padding: 10px; border-bottom: 1px solid #333; text-align: center; color: white; font-size: 14px; }
-        .tag-menu div:hover { background: #444; }
         .bottom-actions { position: fixed; bottom: 0; left: 0; right: 0; background: #050505; padding: 20px; display: flex; justify-content: center; border-top: 3px solid #444; z-index: 1000; }
     </style>
 </head>
@@ -50,7 +49,6 @@
             <div class="clock" style="font-size:20px; color:var(--gold)">00:00:00</div>
         </div>
         <div class="main-controls">
-            <div style="display:flex; gap:10px;"><button class="btn-side" style="background:#600" onclick="resetSys('LS')">⚠️ تصفير LS</button></div>
             <div id="lettersLS" class="letter-group"></div>
             <div style="display:flex; align-items:center; gap:10px;">
                 <button class="btn-side" onclick="toggleDigits('LS')" id="digitBtnLS">3 أرقام</button>
@@ -66,9 +64,7 @@
                 <button class="btn-side" onclick="manualAdd('LS','دعم')">+ دعم</button>
             </div>
         </div>
-        <div class="grid" id="gridAdminLS"></div>
-        <div class="grid" id="gridFieldLS"></div>
-        <div class="grid" id="gridExitLS"></div>
+        <div class="grid" id="gridAdminLS"></div><div class="grid" id="gridFieldLS"></div><div class="grid" id="gridExitLS"></div>
     </div>
 
     <div id="systemSB" class="system-container">
@@ -77,7 +73,6 @@
             <div class="clock" style="font-size:20px; color:var(--gold)">00:00:00</div>
         </div>
         <div class="main-controls">
-            <div style="display:flex; gap:10px;"><button class="btn-side" style="background:#600" onclick="resetSys('SB')">⚠️ تصفير SB</button></div>
             <div id="lettersSB" class="letter-group"></div>
             <div style="display:flex; align-items:center; gap:10px;">
                 <button class="btn-side" onclick="toggleDigits('SB')" id="digitBtnSB">3 أرقام</button>
@@ -93,9 +88,7 @@
                 <button class="btn-side" onclick="manualAdd('SB','دعم')">+ دعم</button>
             </div>
         </div>
-        <div class="grid" id="gridAdminSB"></div>
-        <div class="grid" id="gridFieldSB"></div>
-        <div class="grid" id="gridExitSB"></div>
+        <div class="grid" id="gridAdminSB"></div><div class="grid" id="gridFieldSB"></div><div class="grid" id="gridExitSB"></div>
     </div>
 </div>
 
@@ -105,12 +98,8 @@
 
 <script>
     let currentSystem = 'LS';
-    const config = {
-        LS: { activeLet: 'E', digits: 3, history: [], rep: 1 },
-        SB: { activeLet: 'E', digits: 3, history: [], rep: 1 }
-    };
-
-    const keysLS = ["قيادة", "اشراف عام", "مشرف ميداني", "العمليات", "نائب العمليات", "لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان", "دعم", "الميناء", "وحدات البحث و الانقاذ", "تسجيل خروج"];
+    const config = { LS: { activeLet: 'E', digits: 3, history: [], rep: 1 }, SB: { activeLet: 'E', digits: 3, history: [], rep: 1 } };
+    const keysLS = ["قيادة", "اشراف عام", "مشرف ميداني", "العمليات", "نائب العمليات", "لام 2", "لام 4", "لام 3", "لام 1", "فرسان", "لام 5", "دعم", "الميناء", "وحدات البحث و الانقاذ", "تسجيل خروج"];
     const keysSB = ["قيادة", "اشراف عام", "مشرف ميداني", "العمليات", "نائب العمليات", "سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2", "دعم", "الميناء", "وحدات البحث و الانقاذ", "تسجيل خروج"];
 
     let dataLS = {}; keysLS.forEach(k => dataLS[k] = []);
@@ -119,62 +108,49 @@
     function handleInput(sys, el) {
         el.value = el.value.replace(/\D/g, '');
         let targetDigits = (['M', 'F', 'A', 'S'].includes(config[sys].activeLet)) ? 2 : config[sys].digits;
-        
         if (el.value.length >= targetDigits) {
             let fullCode = config[sys].activeLet + "-" + el.value;
             let target = (sys === 'LS') ? getTargetLS() : getTargetSB();
-
-            // منع التكرار مع استثناء القيادة
             const d = (sys === 'LS' ? dataLS : dataSB);
             const exceptions = ["قيادة", "اشراف عام", "مشرف ميداني"];
             let exists = false;
             for(let key in d) if(d[key].includes(fullCode)) exists = true;
-
-            if (exists && !exceptions.includes(target)) {
-                alert("الكود مكرر!");
-            } else {
-                d[target].push(fullCode);
-                config[sys].history.push({target: target, code: fullCode});
-            }
+            if (exists && !exceptions.includes(target)) { alert("الكود مكرر!"); } 
+            else { d[target].push(fullCode); config[sys].history.push({target: target, code: fullCode}); }
             el.value = ''; render(sys);
         }
     }
 
-    // --- نظام توزيع لوس سانتوس (الحرفي) ---
+    // --- توزيع لوس سانتوس حسب النص الحرفي ---
     function getTargetLS() {
         let d = dataLS;
         if (d["العمليات"].length === 0) return "العمليات";
         if (d["نائب العمليات"].length === 0) return "نائب العمليات";
 
-        // التوزيعة حسب تسلسل الأولوية الذي أرسلته
         let l1 = d["لام 1"].length, l2 = d["لام 2"].length, l3 = d["لام 3"].length, l4 = d["لام 4"].length, l5 = d["لام 5"].length, f = d["فرسان"].length;
 
-        // المرحلة 1: وحدة واحدة في كل مكان (باستثناء لام 5)
+        // 1. أولاً: وحدة واحدة فقط في كل منطقة
         if (l2 < 1) return "لام 2";
         if (l4 < 1) return "لام 4";
         if (l3 < 1) return "لام 3";
         if (l1 < 1) return "لام 1";
         if (f < 1) return "فرسان";
-
-        // المرحلة 2: وحدتين
+        // 2. ثانياً: في حال تواجد وحدة أخرى (وحدتين)
         if (l2 < 2) return "لام 2";
         if (l4 < 2) return "لام 4";
         if (l3 < 2) return "لام 3";
         if (l1 < 2) return "لام 1";
-
-        // المرحلة 3: ثلاث وحدات (حسب النص)
+        // 3. ثالثاً: في حال تواجد وحدة أخرى (3 وحدات)
         if (l2 < 3) return "لام 2";
         if (l4 < 3) return "لام 4";
         if (l1 < 3) return "لام 1";
-
-        // المرحلة 4: دخول لام 5
+        // 4. رابعاً: في حال توفر وحدة (لام 5)
         if (l5 < 1) return "لام 5";
-
-        // العودة للأولوية الاصلية
+        // التكرار من البداية
         return "لام 2";
     }
 
-    // --- نظام توزيع ساندي وبوليتو (الحرفي) ---
+    // --- توزيع ساندي وبوليتو حسب النص الحرفي ---
     function getTargetSB() {
         let d = dataSB;
         if (d["العمليات"].length === 0) return "العمليات";
@@ -182,35 +158,33 @@
 
         let s1 = d["سين 1"].length, b1 = d["باء 1"].length, s = d["سين"].length, g1 = d["جيم 1"].length, b = d["باء"].length, g2 = d["جيم 2"].length;
 
-        // المرحلة 1: وحدة في كل مكان
+        // 1. وحدة واحدة فقط
         if (s1 < 1) return "سين 1";
         if (b1 < 1) return "باء 1";
         if (s < 1) return "سين";
         if (g1 < 1) return "جيم 1";
         if (b < 1) return "باء";
-
-        // المرحلة 2: وحدتين
+        // 2. وحدتين
         if (s1 < 2) return "سين 1";
         if (b1 < 2) return "باء 1";
         if (s < 2) return "سين";
         if (g1 < 2) return "جيم 1";
         if (b < 2) return "باء";
-
-        // المرحلة 3: ثلاث وحدات
+        // 3. ثلاث وحدات
         if (s1 < 3) return "سين 1";
         if (b1 < 3) return "باء 1";
         if (s < 3) return "سين";
         if (g1 < 3) return "جيم 1";
-
-        // المرحلة 4: أربع وحدات
+        // 4. أربع وحدات (للسين والباء)
         if (s1 < 4) return "سين 1";
         if (s < 4) return "سين";
         if (b < 3) return "باء";
         if (b < 4) return "باء";
-
-        // المرحلة 5: دخول جيم 2 (وحدة، ثنتين، ثلاث)
+        // 5. جيم 2 (أخيراً)
+        if (g2 < 1) return "جيم 2";
+        if (g2 < 2) return "جيم 2";
         if (g2 < 3) return "جيم 2";
-
+        
         return "سين 1";
     }
 
@@ -222,55 +196,31 @@
 
         const drawCard = (k) => {
             let cls = structure.admin.includes(k) ? 'card-purple' : (structure.extra.includes(k) ? 'card-white' : '');
-            let tags = d[k].map((u, i) => `
-                <div class="tag">${u}
-                    <div class="tag-menu">
-                        <div onclick="moveToExit('${sys}','${k}',${i})">➡️ خروج</div>
-                        <div onclick="deleteUnit('${sys}','${k}',${i})">❌ حذف</div>
-                    </div>
-                </div>`).join('');
+            let tags = d[k].map((u, i) => `<div class="tag">${u}<div class="tag-menu"><div onclick="moveToExit('${sys}','${k}',${i})">➡️ خروج</div><div onclick="deleteUnit('${sys}','${k}',${i})">❌ حذف</div></div></div>`).join('');
             return `<div class="card ${cls}"><div class="card-header ${(sys==='LS'?'ls-header':'sb-header')}">${k}</div><div class="card-body">${tags}</div></div>`;
         };
-
         document.getElementById(`gridAdmin${sys}`).innerHTML = structure.admin.concat(structure.extra).map(drawCard).join('');
         document.getElementById(`gridField${sys}`).innerHTML = structure.field.map(drawCard).join('');
         document.getElementById(`gridExit${sys}`).innerHTML = drawCard("تسجيل خروج");
         document.getElementById(`repNum${sys}`).innerText = config[sys].rep;
     }
 
-    function toggleDigits(sys) {
-        config[sys].digits = (config[sys].digits === 3 ? 4 : 3);
-        document.getElementById(`digitBtn${sys}`).innerText = config[sys].digits + " أرقام";
-    }
-
-    function moveToExit(sys, k, i) {
-        let d = (sys === 'LS' ? dataLS : dataSB);
-        d["تسجيل خروج"].push(d[k].splice(i, 1)[0]);
-        render(sys);
-    }
-
+    function toggleDigits(sys) { config[sys].digits = (config[sys].digits === 3 ? 4 : 3); document.getElementById(`digitBtn${sys}`).innerText = config[sys].digits + " أرقام"; }
+    function moveToExit(sys, k, i) { dataLS["تسجيل خروج"].push((sys === 'LS' ? dataLS : dataSB)[k].splice(i, 1)[0]); render(sys); }
     function deleteUnit(sys, k, i) { (sys === 'LS' ? dataLS : dataSB)[k].splice(i, 1); render(sys); }
     function manualAdd(sys, k) { let n = prompt("الكود:"); if(n) { (sys === 'LS' ? dataLS : dataSB)[k].push(config[sys].activeLet + "-" + n); render(sys); } }
     function changeRepNum(sys) { let n = prompt("رقم:"); if(n) { config[sys].rep = n; render(sys); } }
     function resetSys(sys) { if(confirm("تصفير؟")) location.reload(); }
     function undo(sys) { if(config[sys].history.length) { let last = config[sys].history.pop(); (sys==='LS'?dataLS:dataSB)[last.target].pop(); render(sys); } }
-
-    function switchSystem(sys) {
-        currentSystem = sys;
-        document.querySelectorAll('.system-container').forEach(c => c.classList.remove('active'));
-        document.getElementById(`system${sys}`).classList.add('active');
-        document.getElementById('lsTabBtn').classList.toggle('active', sys === 'LS');
-        document.getElementById('sbTabBtn').classList.toggle('active', sys === 'SB');
-    }
+    function switchSystem(sys) { currentSystem = sys; document.querySelectorAll('.system-container').forEach(c => c.classList.remove('active')); document.getElementById(`system${sys}`).classList.add('active'); document.getElementById('lsTabBtn').classList.toggle('active', sys === 'LS'); document.getElementById('sbTabBtn').classList.toggle('active', sys === 'SB'); }
 
     function copyCurrentReport() {
         const sys = currentSystem; const d = (sys === 'LS' ? dataLS : dataSB);
         const keys = (sys === 'LS' ? keysLS : keysSB);
         const cityName = (sys === 'LS' ? 'لوس سانتوس' : 'ساندي و بوليتو');
         const now = new Date();
-        const days = ["الأحد", "الأثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
         const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }).replace('AM', 'ص').replace('PM', 'م');
-        let txt = `تم تحديث تقرير عمليات  ( ${cityName} ) رقم ( ${config[sys].rep} )  في تمام الساعه  (${timeStr} )  في يوم ( ${days[now.getDay()]} ) التاريخ ${now.toLocaleDateString('en-CA').replace(/-/g,'/')}\n\n`;
+        let txt = `تم تحديث تقرير عمليات  ( ${cityName} ) رقم ( ${config[sys].rep} )  في تمام الساعه  (${timeStr} )  في التاريخ ${now.toLocaleDateString('en-CA').replace(/-/g,'/')}\n\n`;
         keys.forEach(k => {
             let units = (d[k].length > 0) ? ( (k === "العمليات" || k === "نائب العمليات") ? d[k].join(' | ') + " |" : d[k].join('\n') ) : "E-000";
             txt += `${k} :\n${units}\n\n`;
@@ -286,7 +236,6 @@
             document.getElementById(`letters${sys}`).appendChild(b);
         });
     });
-
     setInterval(() => { document.querySelectorAll('.clock').forEach(c => c.innerText = new Date().toLocaleTimeString('en-GB')); }, 1000);
     render('LS'); render('SB');
 </script>
