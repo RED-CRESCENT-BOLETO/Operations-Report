@@ -2,57 +2,59 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>EMS TOTAL SYSTEM - EXACT DESIGN</title>
+    <title>EMS TOTAL SYSTEM - V11 FIXED</title>
     <style>
         :root { --red: #b32633; --blue: #1e1e1e; --gold: #ffd700; --purple: #6a1b9a; --white: #ffffff; }
-        body { font-family: 'Segoe UI', sans-serif; background: #000 url('https://i.top4top.io/p_3592jzcr01.jpg') no-repeat center center fixed; background-size: cover; color: white; margin: 0; padding: 0; }
-        .overlay { background: rgba(0,0,0,0.92); min-height: 100vh; padding: 15px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #000 url('https://i.top4top.io/p_3592jzcr01.jpg') no-repeat center center fixed; background-size: cover; color: white; margin: 0; padding: 0; overflow-x: hidden; }
+        .overlay { background: rgba(0,0,0,0.94); min-height: 100vh; padding: 15px; box-sizing: border-box; }
         
-        /* التبويبات العلوية */
+        /* Navigation Tabs */
         .tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 10px; }
-        .tab-btn { padding: 12px 60px; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: white; font-weight: bold; cursor: pointer; font-size: 16px; }
-        .tab-btn.active-ls { background: var(--red); border-color: white; }
-        .tab-btn.active-sb { background: #333; border-color: white; }
+        .tab-btn { padding: 12px 60px; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: white; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .tab-btn.active-ls { background: var(--red); border-color: white; box-shadow: 0 0 10px var(--red); }
+        .tab-btn.active-sb { background: #444; border-color: white; box-shadow: 0 0 10px #666; }
 
-        .top-line { border-top: 2px solid var(--red); display: flex; justify-content: space-between; padding: 5px 20px; font-size: 14px; background: rgba(0,0,0,0.5); margin-bottom: 20px; }
+        .top-line { border-top: 2px solid var(--red); display: flex; justify-content: space-between; padding: 8px 20px; font-size: 14px; background: rgba(0,0,0,0.8); margin-bottom: 15px; }
         
-        /* لوحة التحكم المركزية */
-        .control-panel { background: rgba(20,20,20,0.6); border: 1px solid #333; border-radius: 15px; padding: 20px; margin: 0 auto 30px; max-width: 900px; text-align: center; }
+        /* Central Control Panel */
+        .control-panel { background: rgba(20,20,20,0.8); border: 1px solid #333; border-radius: 15px; padding: 20px; margin: 0 auto 25px; max-width: 900px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .action-row { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
-        .btn-action { padding: 8px 15px; border-radius: 5px; border: none; color: white; font-weight: bold; cursor: pointer; font-size: 13px; }
+        .btn-green { background: #27ae60; color: white; padding: 8px 20px; border-radius: 5px; border: none; cursor: pointer; font-weight: bold; }
+        .btn-red { background: var(--red); color: white; padding: 8px 20px; border-radius: 5px; border: none; cursor: pointer; font-weight: bold; }
         
-        .letters-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; }
-        .let-btn { width: 40px; height: 40px; background: #222; border: 1px solid #555; color: white; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .let-btn.active { background: var(--red); border-color: white; }
+        .letters-row { display: flex; justify-content: center; gap: 6px; margin-bottom: 15px; flex-wrap: wrap; }
+        .let-btn { width: 42px; height: 42px; background: #222; border: 1px solid #555; color: white; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.2s; }
+        .let-btn.active { background: var(--red); border-color: white; transform: scale(1.1); }
 
-        .input-row { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 15px; }
-        .main-input { background: #000; border: 2px solid #333; color: white; font-size: 40px; width: 150px; text-align: center; border-radius: 10px; padding: 5px; }
+        .input-row { display: flex; justify-content: center; align-items: center; gap: 12px; margin-bottom: 15px; }
+        .main-input { background: #000; border: 2px solid #444; color: white; font-size: 45px; width: 160px; text-align: center; border-radius: 10px; padding: 5px; outline: none; }
+        .main-input:focus { border-color: var(--gold); }
         
-        /* أزرار الإضافة اليدوية (المناصب) */
-        .manual-btns { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
-        .m-btn { background: #1a1a1a; border: 1px solid #444; color: #aaa; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; }
-        .m-btn:hover { border-color: var(--gold); }
+        .manual-btns { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+        .m-btn { background: #111; border: 1px solid #444; color: #ddd; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 12px; transition: 0.2s; }
+        .m-btn:hover { background: #222; border-color: var(--gold); }
 
-        /* شبكة الصناديق - مطابقة للصورة */
-        .grid-container { display: flex; flex-direction: column; gap: 20px; padding: 0 10px; }
+        /* Grid Layout (Matches Image) */
+        .grid-container { display: flex; flex-direction: column; gap: 15px; margin-bottom: 100px; }
         .row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
         
-        .box { width: 140px; background: #000; border: 1px solid #222; border-radius: 8px; overflow: hidden; min-height: 80px; }
-        .box-header { padding: 5px; text-align: center; font-size: 12px; font-weight: bold; }
-        .box-body { padding: 8px; display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; }
+        .box { width: 135px; background: rgba(0,0,0,0.8); border: 1px solid #222; border-radius: 6px; overflow: hidden; min-height: 90px; }
+        .box-header { padding: 6px; text-align: center; font-size: 11px; font-weight: bold; }
+        .box-body { padding: 6px; display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; align-content: flex-start; }
         
-        /* ألوان الصناديق */
         .bg-red { background: var(--red); color: white; }
         .bg-purple { background: var(--purple); color: white; }
         .bg-white { background: var(--white); color: black; }
         
-        .unit-tag { background: #111; border: 1px solid #333; padding: 3px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; position: relative; cursor: pointer; }
-        .tag-menu { display: none; position: absolute; top: 100%; left: 0; background: #222; border: 1px solid #444; z-index: 500; width: 80px; }
+        .unit-tag { background: #0a0a0a; border: 1px solid #333; padding: 4px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; position: relative; cursor: pointer; color: white; }
+        .unit-tag:hover { background: #1a1a1a; border-color: #666; }
+        .tag-menu { display: none; position: absolute; bottom: 100%; left: 0; background: #222; border: 1px solid #555; z-index: 1000; width: 85px; border-radius: 4px; }
         .unit-tag:hover .tag-menu { display: block; }
-        .tag-menu div { padding: 5px; border-bottom: 1px solid #333; font-size: 10px; text-align: center; }
+        .tag-menu div { padding: 6px; border-bottom: 1px solid #333; font-size: 10px; text-align: center; color: white; }
+        .tag-menu div:hover { background: #444; }
 
-        .footer { position: fixed; bottom: 0; left: 0; right: 0; background: #000; padding: 15px; border-top: 1px solid #333; text-align: center; }
-        .copy-btn { background: #27ae60; color: white; border: none; padding: 10px 80px; border-radius: 5px; font-weight: bold; font-size: 18px; cursor: pointer; }
+        .footer { position: fixed; bottom: 0; left: 0; right: 0; background: #000; padding: 15px; border-top: 2px solid #333; text-align: center; z-index: 2000; }
+        .copy-btn { background: #27ae60; color: white; border: none; padding: 12px 100px; border-radius: 8px; font-weight: bold; font-size: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3); }
     </style>
 </head>
 <body>
@@ -65,13 +67,13 @@
 
     <div class="top-line">
         <div id="clock">00:00:00</div>
-        <div>تقرير LS رقم: <span id="repNum" style="color:var(--gold);">1</span></div>
+        <div>تقرير <span id="cityTitle">LS</span> رقم: <span id="repNum" onclick="changeRepNum()" style="color:var(--gold); cursor:pointer;">1</span></div>
     </div>
 
     <div class="control-panel">
         <div class="action-row">
-            <button class="btn-action" style="background:#27ae60;" onclick="shuffleField()">🔄 عشوائي (ميداني)</button>
-            <button class="btn-action" style="background:var(--red);" onclick="resetAll()">⚠️ تصفير LS</button>
+            <button class="btn-green" onclick="shuffleField()">🔄 عشوائي (ميداني)</button>
+            <button class="btn-red" id="resetBtn" onclick="resetCurrentCity()">⚠️ تصفير LS</button>
         </div>
         
         <div id="letters" class="letters-row"></div>
@@ -83,12 +85,12 @@
         </div>
 
         <div class="manual-btns">
-            <button class="m-btn" onclick="addManually('دعم')">دعم +</button>
-            <button class="m-btn" onclick="addManually('الميناء')">ميناء +</button>
-            <button class="m-btn" onclick="addManually('وحدات البحث و الانقاذ')">بحث +</button>
-            <button class="m-btn" onclick="addManually('مشرف ميداني')">مشرف +</button>
-            <button class="m-btn" onclick="addManually('اشراف عام')">اشراف +</button>
-            <button class="m-btn" onclick="addManually('القيادة')">قيادة +</button>
+            <button class="m-btn" onclick="addManually('دعم')">+ دعم</button>
+            <button class="m-btn" onclick="addManually('الميناء')">+ ميناء</button>
+            <button class="m-btn" onclick="addManually('وحدات البحث و الانقاذ')">+ بحث</button>
+            <button class="m-btn" onclick="addManually('مشرف ميداني')">+ مشرف</button>
+            <button class="m-btn" onclick="addManually('اشراف عام')">+ اشراف</button>
+            <button class="m-btn" onclick="addManually('الالقيادة')">+ قيادة</button>
         </div>
     </div>
 
@@ -107,42 +109,51 @@
     let currentCity = 'LS';
     let currentLet = 'E';
     let digits = 3;
-    const history = [];
+    let history = [];
 
-    // الهيكل التنظيمي كما في الصورة
     const structure = {
         LS: {
-            row1: ["فرسان", "لام 5", "لام 4", "لام 3", "لام 2", "لام 1", "نائب العمليات", "العمليات"],
-            row2: ["دعم", "الميناء", "وحدات البحث و الانقاذ", "مشرف ميداني", "اشراف عام", "الالقيادة"],
+            row1: ["العمليات", "نائب العمليات", "لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"],
+            row2: ["الالقيادة", "اشراف عام", "مشرف ميداني", "وحدات البحث و الانقاذ", "الميناء", "دعم"],
             row3: ["تسجيل الخروج"]
         },
         SB: {
-            row1: ["جيم 2", "جيم 1", "باء 1", "باء", "سين 1", "سين", "نائب العمليات", "العمليات"],
-            row2: ["دعم", "الميناء", "وحدات البحث و الانقاذ", "مشرف ميداني", "اشراف عام", "الالقيادة"],
+            row1: ["العمليات", "نائب العمليات", "سين", "سين 1", "باء", "باء 1", "جيم 1", "جيم 2"],
+            row2: ["الالقيادة", "اشراف عام", "مشرف ميداني", "وحدات البحث و الانقاذ", "الميناء", "دعم"],
             row3: ["تسجيل الخروج"]
         }
     };
 
-    let data = JSON.parse(localStorage.getItem('EMS_DATA_V2026')) || { LS: {}, SB: {} };
-    // تهيئة البيانات
-    ['LS','SB'].forEach(c => {
-        [...structure[c].row1, ...structure[c].row2, ...structure[c].row3].forEach(k => {
-            if(!data[c][k]) data[c][k] = [];
+    let data = JSON.parse(localStorage.getItem('EMS_PRO_DATABASE')) || { LS: {}, SB: {}, repLS: 1, repSB: 1 };
+
+    function init() {
+        ['LS','SB'].forEach(c => {
+            if(!data[c]) data[c] = {};
+            [...structure[c].row1, ...structure[c].row2, ...structure[c].row3].forEach(k => {
+                if(!data[c][k]) data[c][k] = [];
+            });
         });
-    });
+        render();
+    }
 
     function render() {
         const city = currentCity;
+        document.getElementById('cityTitle').innerText = city;
+        document.getElementById('repNum').innerText = (city === 'LS' ? data.repLS : data.repSB);
+        document.getElementById('resetBtn').innerText = `⚠️ تصفير ${city}`;
+
         ['row1','row2','row3'].forEach(rId => {
             const container = document.getElementById(rId);
             container.innerHTML = structure[city][rId].map(k => {
-                let colorClass = structure[city].row1.includes(k) ? 'bg-red' : (['الالقيادة','اشراف عام','مشرف ميداني'].includes(k) ? 'bg-purple' : (['دعم','الميناء','وحدات البحث و الانقاذ'].includes(k) ? 'bg-white' : 'bg-red'));
-                if (k === "تسجيل الخروج") colorClass = 'bg-red';
+                let colorClass = 'bg-red';
+                if(['الالقيادة','اشراف عام','مشرف ميداني'].includes(k)) colorClass = 'bg-purple';
+                if(['وحدات البحث و الانقاذ','الميناء','دعم'].includes(k)) colorClass = 'bg-white';
                 
                 let units = data[city][k].map((u, i) => `
-                    <div class="unit-tag" onclick="editUnit('${k}',${i})">${u}
+                    <div class="unit-tag">${u}
                         <div class="tag-menu">
-                            <div onclick="moveOut('${k}',${i})">➡️ خروج</div>
+                            <div onclick="moveOut('${k}',${i})">➡️ تسجيل خروج</div>
+                            <div onclick="editUnit('${k}',${i})">✏️ تعديل</div>
                             <div onclick="deleteUnit('${k}',${i})">❌ حذف</div>
                         </div>
                     </div>
@@ -154,19 +165,20 @@
                         </div>`;
             }).join('');
         });
-        localStorage.setItem('EMS_DATA_V2026', JSON.stringify(data));
+        localStorage.setItem('EMS_PRO_DATABASE', JSON.stringify(data));
     }
 
     function handleInput(el) {
         el.value = el.value.replace(/\D/g,'');
         if(el.value.length >= digits) {
             const code = currentLet + "-" + el.value;
-            if(isDup(code)) { alert("مكرر!"); el.value=''; return; }
+            if(isDuplicate(code)) { alert("هذا الكود مسجل مسبقاً في الميدان!"); el.value = ''; return; }
             
             let target = getAutoTarget();
             data[currentCity][target].push(code);
             history.push({city: currentCity, key: target});
-            el.value = ''; render();
+            el.value = ''; 
+            render();
         }
     }
 
@@ -186,17 +198,20 @@
         }
     }
 
-    function isDup(code) {
-        const adminKeys = ["الالقيادة", "اشراف عام", "مشرف ميداني"];
+    function isDuplicate(code) {
+        const exceptions = ["الالقيادة", "اشراف عام", "مشرف ميداني"];
         for(let k in data[currentCity]) {
-            if(!adminKeys.includes(k) && data[currentCity][k].includes(code)) return true;
+            if(!exceptions.includes(k) && data[currentCity][k].includes(code)) return true;
         }
         return false;
     }
 
-    function addManually(k) {
-        let val = prompt(`إضافة كود يدوي لـ ${k}:`);
-        if(val) { data[currentCity][k].push(val); render(); }
+    function addManually(key) {
+        let code = prompt(`أدخل الكود لـ ${key}:`, currentLet + "-");
+        if(code) {
+            data[currentCity][key].push(code);
+            render();
+        }
     }
 
     function switchSys(city) {
@@ -206,12 +221,93 @@
         render();
     }
 
-    function toggleDigits() { digits = (digits === 3 ? 4 : 3); document.getElementById('digitBtn').innerText = digits + " أرقام"; }
+    function toggleDigits() { 
+        digits = (digits === 3 ? 4 : 3); 
+        document.getElementById('digitBtn').innerText = digits + " أرقام"; 
+    }
 
-    function moveOut(k, i) { data[currentCity]["تسجيل الخروج"].push(data[currentCity][k].splice(i, 1)[0]); render(); }
-    function deleteUnit(k, i) { data[currentCity][k].splice(i, 1); render(); }
+    function moveOut(k, i) { 
+        let unit = data[currentCity][k].splice(i, 1)[0];
+        data[currentCity]["تسجيل الخروج"].push(unit);
+        if(!structure[currentCity].row2.includes(k)) rebalance();
+        render(); 
+    }
 
-    // إنشاء أزرار الأحرف
+    function deleteUnit(k, i) { 
+        data[currentCity][k].splice(i, 1); 
+        if(!structure[currentCity].row2.includes(k)) rebalance();
+        render(); 
+    }
+
+    function editUnit(k, i) {
+        let newVal = prompt("تعديل الكود:", data[currentCity][k][i]);
+        if(newVal) { data[currentCity][k][i] = newVal; render(); }
+    }
+
+    function undo() {
+        if(history.length > 0) {
+            let last = history.pop();
+            data[last.city][last.key].pop();
+            render();
+        }
+    }
+
+    function rebalance() {
+        let city = currentCity;
+        let fieldKeys = (city === 'LS') ? ["لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["سين", "سين 1", "باء", "باء 1", "جيم 1", "جيم 2"];
+        let allUnits = [];
+        fieldKeys.forEach(k => { allUnits.push(...data[city][k]); data[city][k] = []; });
+        allUnits.forEach(u => {
+            let t = getAutoTarget();
+            data[city][t].push(u);
+        });
+    }
+
+    function shuffleField() {
+        let city = currentCity;
+        let fieldKeys = (city === 'LS') ? ["لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["سين", "سين 1", "باء", "باء 1", "جيم 1", "جيم 2"];
+        let allUnits = [];
+        fieldKeys.forEach(k => { allUnits.push(...data[city][k]); data[city][k] = []; });
+        allUnits.sort(() => Math.random() - 0.5);
+        allUnits.forEach(u => {
+            let t = getAutoTarget();
+            data[city][t].push(u);
+        });
+        render();
+    }
+
+    function changeRepNum() {
+        let n = prompt("رقم التقرير الجديد:");
+        if(n) {
+            if(currentCity === 'LS') data.repLS = n; else data.repSB = n;
+            render();
+        }
+    }
+
+    function resetCurrentCity() {
+        if(confirm(`هل أنت متأكد من تصفير بيانات ${currentCity}؟`)) {
+            [...structure[currentCity].row1, ...structure[currentCity].row2, ...structure[currentCity].row3].forEach(k => data[currentCity][k] = []);
+            render();
+        }
+    }
+
+    function copyReport() {
+        const city = currentCity;
+        const d = data[city];
+        const r = (city === 'LS' ? data.repLS : data.repSB);
+        let txt = `تقرير ${city === 'LS' ? 'لوس سانتوس' : 'ساندي وبوليتو'} رقم (${r})\n`;
+        txt += `اليوم: ${new Date().toLocaleDateString('ar-SA')} | الوقت: ${new Date().toLocaleTimeString('ar-SA')}\n\n`;
+        
+        [...structure[city].row1, ...structure[city].row2, ...structure[city].row3].forEach(k => {
+            if(d[k].length > 0) {
+                txt += `${k}:\n${d[k].join(k.includes("العمليات") ? " | " : "\n")}\n\n`;
+            }
+        });
+        
+        navigator.clipboard.writeText(txt).then(() => alert("✅ تم نسخ التقرير بنجاح"));
+    }
+
+    // Letters Setup
     const lets = ['H','P','G','C','S','M','F','A','E'];
     const lContainer = document.getElementById('letters');
     lets.forEach(l => {
@@ -225,7 +321,7 @@
     });
 
     setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-GB'); }, 1000);
-    render();
+    init();
 </script>
 </body>
 </html>
