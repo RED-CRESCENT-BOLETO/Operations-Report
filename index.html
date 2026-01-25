@@ -2,195 +2,194 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>نظام توزيع EMS المطور</title>
+    <title>نظام توزيع EMS - التوزيع الحرفي</title>
     <style>
-        :root { --ls-color: #b32633; --sb-color: #0056b3; --accent: #ffd700; --dark: #0a0a0a; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #111; color: white; margin: 0; padding-bottom: 80px; }
-        .tabs { display: flex; cursor: pointer; background: #222; border-bottom: 2px solid #333; }
-        .tab { flex: 1; padding: 20px; text-align: center; font-size: 22px; font-weight: bold; transition: 0.3s; color: #777; }
-        .tab.active-ls { background: var(--ls-color); color: white; }
-        .tab.active-sb { background: var(--sb-color); color: white; }
+        :root { --ls-red: #b32633; --sb-blue: #0056b3; --gold: #ffd700; --bg: #0a0a0a; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #000; color: white; margin: 0; padding-bottom: 100px; }
+        .tabs { display: flex; width: 100%; height: 60px; background: #111; border-bottom: 2px solid #333; }
+        .tab-btn { flex: 1; border: none; cursor: pointer; font-size: 20px; font-weight: bold; color: #666; background: #111; transition: 0.3s; }
+        .tab-btn.active-ls { background: var(--ls-red); color: white; }
+        .tab-btn.active-sb { background: var(--sb-blue); color: white; }
         
-        .panel { padding: 20px; display: none; }
-        .panel.active { display: block; }
+        .container { padding: 20px; display: none; }
+        .container.active { display: block; }
 
-        .control-unit { background: #1a1a1a; padding: 25px; border-radius: 15px; border: 1px solid #333; text-align: center; margin-bottom: 30px; }
-        .letter-btn { width: 50px; height: 50px; margin: 3px; border: none; border-radius: 8px; background: #333; color: white; font-weight: bold; cursor: pointer; }
-        .letter-btn.active { background: var(--accent); color: black; }
+        .control-panel { background: #111; padding: 25px; border-radius: 15px; border: 1px solid #333; margin-bottom: 20px; text-align: center; }
+        .letter-btns { display: flex; justify-content: center; gap: 5px; margin-bottom: 15px; flex-wrap: wrap; }
+        .l-btn { width: 45px; height: 45px; border: 1px solid #444; background: #222; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; }
+        .l-btn.active { background: var(--gold); color: black; border-color: white; }
         
-        .code-input { font-size: 50px; width: 180px; text-align: center; background: #000; color: white; border: 2px solid #444; border-radius: 12px; margin: 15px 0; outline: none; }
-        .ls-border { border-color: var(--ls-color); color: var(--ls-color); }
-        .sb-border { border-color: var(--sb-color); color: var(--sb-color); }
+        .main-input { font-size: 55px; width: 200px; text-align: center; background: #000; border-radius: 12px; outline: none; margin: 10px 0; font-weight: bold; }
+        .ls-input { border: 3px solid var(--ls-red); color: var(--ls-red); }
+        .sb-input { border: 3px solid var(--sb-blue); color: var(--sb-blue); }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
-        .card { background: #151515; border-radius: 10px; border: 1px solid #333; overflow: hidden; }
-        .card-header { padding: 12px; text-align: center; font-weight: bold; background: #222; font-size: 16px; border-bottom: 1px solid #333; }
-        .ls-head { border-top: 5px solid var(--ls-color); }
-        .sb-head { border-top: 5px solid var(--sb-color); }
-        .card-body { padding: 15px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; min-height: 60px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+        .card { background: #161616; border-radius: 10px; border: 1px solid #333; min-height: 120px; }
+        .card-h { padding: 10px; text-align: center; font-weight: bold; background: #222; font-size: 15px; border-bottom: 1px solid #333; }
+        .ls-h { border-top: 4px solid var(--ls-red); }
+        .sb-h { border-top: 4px solid var(--sb-blue); }
+        .card-b { padding: 10px; display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
         
-        .unit-tag { background: #000; border: 1px solid #444; padding: 6px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        .unit-tag:hover { border-color: #f00; color: #f00; }
+        .unit { background: #000; border: 1px solid #444; padding: 6px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .unit:hover { color: #f00; border-color: #f00; }
 
-        .footer-tools { position: fixed; bottom: 0; width: 100%; background: #000; padding: 15px; border-top: 2px solid #333; display: flex; justify-content: center; gap: 15px; z-index: 100; }
-        .btn-tool { padding: 12px 30px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; font-size: 16px; }
+        .bottom-bar { position: fixed; bottom: 0; width: 100%; background: #000; padding: 15px; border-top: 2px solid #333; display: flex; justify-content: center; gap: 20px; }
+        .btn-act { padding: 12px 40px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; font-size: 18px; }
     </style>
 </head>
 <body>
 
 <div class="tabs">
-    <div id="lsTab" class="tab active-ls" onclick="setMode('LS')">لوس سانتوس</div>
-    <div id="sbTab" class="tab" onclick="setMode('SB')">ساندي و بوليتو</div>
+    <button id="tabLS" class="tab-btn active-ls" onclick="setMode('LS')">لوس سانتوس (LUSS)</button>
+    <button id="tabSB" class="tab-btn" onclick="setMode('SB')">ساندي وبوليتو (SANDY)</button>
 </div>
 
-<div id="lsPanel" class="panel active">
-    <div class="control-unit">
-        <div id="lsLetters" class="letter-row"></div>
-        <input type="text" id="lsInput" class="code-input ls-border" placeholder="000" maxlength="4">
-        <div>
-            <button class="btn-tool" style="background:#444; color:white;" onclick="undo('LS')">تراجع ↩️</button>
-            <button class="btn-tool" style="background:#600; color:white;" onclick="reset('LS')">تصفير لوس ⚠️</button>
+<div id="contLS" class="container active">
+    <div class="control-panel">
+        <div id="alphaLS" class="letter-btns"></div>
+        <input type="text" id="inLS" class="main-input ls-input" placeholder="000" maxlength="4">
+        <div style="margin-top:10px;">
+            <button class="btn-act" style="background:#444; color:white;" onclick="undo('LS')">تراجع ↩️</button>
+            <button class="btn-act" style="background:#600; color:white;" onclick="reset('LS')">تصفير ⚠️</button>
         </div>
     </div>
-    <div class="grid" id="lsGrid"></div>
+    <div class="grid" id="gridLS"></div>
 </div>
 
-<div id="sbPanel" class="panel">
-    <div class="control-unit">
-        <div id="sbLetters" class="letter-row"></div>
-        <input type="text" id="sbInput" class="code-input sb-border" placeholder="000" maxlength="4">
-        <div>
-            <button class="btn-tool" style="background:#444; color:white;" onclick="undo('SB')">تراجع ↩️</button>
-            <button class="btn-tool" style="background:#600; color:white;" onclick="reset('SB')">تصفير ساندي ⚠️</button>
+<div id="contSB" class="container">
+    <div class="control-panel">
+        <div id="alphaSB" class="letter-btns"></div>
+        <input type="text" id="inSB" class="main-input sb-input" placeholder="000" maxlength="4">
+        <div style="margin-top:10px;">
+            <button class="btn-act" style="background:#444; color:white;" onclick="undo('SB')">تراجع ↩️</button>
+            <button class="btn-act" style="background:#004; color:white;" onclick="reset('SB')">تصفير ⚠️</button>
         </div>
     </div>
-    <div class="grid" id="sbGrid"></div>
+    <div class="grid" id="gridSB"></div>
 </div>
 
-<div class="footer-tools">
-    <button class="btn-tool" style="background:#28a745; color:white;" onclick="copyReport()">📋 نسخ التقرير الحالي</button>
+<div class="bottom-bar">
+    <button class="btn-act" style="background:#28a745; color:white;" onclick="copyReport()">📋 نسخ التقرير</button>
 </div>
 
 <script>
-    let mode = 'LS';
+    let currentMode = 'LS';
     let letters = { LS: 'E', SB: 'E' };
     let history = { LS: [], SB: [] };
 
-    // مفاتيح المناطق حسب الترتيب في طلبك
     const keysLS = ["العمليات", "نائب العمليات", "لام 2", "لام 4", "لام 3", "لام 1", "فرسان", "لام 5", "دعم", "الميناء", "وحدات البحث و الانقاذ", "قيادة", "اشراف عام", "مشرف ميداني", "تسجيل خروج"];
     const keysSB = ["العمليات", "نائب العمليات", "سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2", "دعم", "الميناء", "وحدات البحث و الانقاذ", "قيادة", "اشراف عام", "مشرف ميداني", "تسجيل خروج"];
 
     let dataLS = {}; keysLS.forEach(k => dataLS[k] = []);
     let dataSB = {}; keysSB.forEach(k => dataSB[k] = []);
 
-    // --- منطق توزيع لوس سانتوس (الحرفي) ---
+    // --- منطق لوس سانتوس الحرفي ---
     function getLsTarget() {
-        if (dataLS["العمليات"].length === 0) return "العمليات";
-        if (dataLS["نائب العمليات"].length === 0) return "نائب العمليات";
+        let d = dataLS;
+        if (d["العمليات"].length === 0) return "العمليات";
+        if (d["نائب العمليات"].length === 0) return "نائب العمليات";
 
-        let l2 = dataLS["لام 2"].length, l4 = dataLS["لام 4"].length, l3 = dataLS["لام 3"].length, l1 = dataLS["لام 1"].length, f = dataLS["فرسان"].length, l5 = dataLS["لام 5"].length;
-        
-        // اكتفاء المناطق (وحدة واحدة)
-        if (l2 < 1) return "لام 2"; if (l4 < 1) return "لام 4"; if (l3 < 1) return "لام 3"; if (l1 < 1) return "لام 1"; if (f < 1) return "فرسان";
-        // تواجد وحدة أخرى (وحدتين)
-        if (l2 < 2) return "لام 2"; if (l4 < 2) return "لام 4"; if (l3 < 2) return "لام 3"; if (l1 < 2) return "لام 1";
-        // تواجد وحدة أخرى (3 وحدات)
-        if (l2 < 3) return "لام 2"; if (l4 < 3) return "لام 4"; if (l1 < 3) return "لام 1";
-        // اكتفاء الجميع ثم لام 5
-        if (l5 < 1) return "لام 5";
+        let l1=d["لام 1"].length, l2=d["لام 2"].length, l3=d["لام 3"].length, l4=d["لام 4"].length, l5=d["لام 5"].length, f=d["فرسان"].length;
 
-        return "لام 2"; // العودة للأولوية من البداية
+        // المرحلة 1: 5 وحدات فقط
+        if(l2<1) return "لام 2"; if(l4<1) return "لام 4"; if(l3<1) return "لام 3"; if(l1<1) return "لام 1"; if(f<1) return "فرسان";
+        // المرحلة 2: زيادة وحدتين
+        if(l2<2) return "لام 2"; if(l4<2) return "لام 4"; if(l3<2) return "لام 3"; if(l1<2) return "لام 1";
+        // المرحلة 3: زيادة ثلاث وحدات
+        if(l2<3) return "لام 2"; if(l4<3) return "لام 4"; if(l1<3) return "لام 1";
+        // المرحلة 4: لام 5
+        if(l5<1) return "لام 5";
+        // البداية من جديد
+        return "لام 2";
     }
 
-    // --- منطق توزيع ساندي وبوليتو (الحرفي) ---
+    // --- منطق ساندي الحرفي ---
     function getSbTarget() {
-        if (dataSB["العمليات"].length === 0) return "العمليات";
-        if (dataSB["نائب العمليات"].length === 0) return "نائب العمليات";
+        let d = dataSB;
+        if (d["العمليات"].length === 0) return "العمليات";
+        if (d["نائب العمليات"].length === 0) return "نائب العمليات";
 
-        let s1 = dataSB["سين 1"].length, b1 = dataSB["باء 1"].length, s = dataSB["سين"].length, g1 = dataSB["جيم 1"].length, b = dataSB["باء"].length, g2 = dataSB["جيم 2"].length;
+        let s1=d["سين 1"].length, b1=d["باء 1"].length, s=d["سين"].length, g1=d["جيم 1"].length, b=d["باء"].length, g2=d["جيم 2"].length;
 
-        // اكتفاء المناطق (وحدة واحدة)
-        if (s1 < 1) return "سين 1"; if (b1 < 1) return "باء 1"; if (s < 1) return "سين"; if (g1 < 1) return "جيم 1"; if (b < 1) return "باء";
-        // تواجد وحدة أخرى (وحدتين)
-        if (s1 < 2) return "سين 1"; if (b1 < 2) return "باء 1"; if (s < 2) return "سين"; if (g1 < 2) return "جيم 1"; if (b < 2) return "باء";
-        // تواجد وحدة أخرى (3 وحدات)
-        if (s1 < 3) return "سين 1"; if (b1 < 3) return "باء 1"; if (s < 3) return "سين"; if (g1 < 3) return "جيم 1";
-        // تواجد وحدة أخرى (4 وحدات)
-        if (s1 < 4) return "سين 1"; if (s < 4) return "سين"; if (b < 3) return "باء"; if (b < 4) return "باء";
-        // اكتفاء سين 1 وباء 1 وسين ثم جيم 2
-        if (s1 >= 4 && b1 >= 3 && s >= 4) { if (g2 < 3) return "جيم 2"; }
+        // المرحلة 1: وحدة لكل منطقة
+        if(s1<1) return "سين 1"; if(b1<1) return "باء 1"; if(s<1) return "سين"; if(g1<1) return "جيم 1"; if(b<1) return "باء";
+        // المرحلة 2: وحدتين
+        if(s1<2) return "سين 1"; if(b1<2) return "باء 1"; if(s<2) return "سين"; if(g1<2) return "جيم 1"; if(b<2) return "باء";
+        // المرحلة 3: ثلاث وحدات
+        if(s1<3) return "سين 1"; if(b1<3) return "باء 1"; if(s<3) return "سين"; if(g1<3) return "جيم 1";
+        // المرحلة 4: أربع وحدات
+        if(s1<4) return "سين 1"; if(s<4) return "سين"; if(b<3) return "باء"; if(b<4) return "باء";
+        // المرحلة 5: جيم 2 (بعد اكتفاء سين 1 وباء 1 وسين)
+        if(s1>=4 && b1>=3 && s>=4) { if(g2<3) return "جيم 2"; }
 
-        return "سين 1"; // العودة للأولوية من البداية
+        return "سين 1";
     }
 
-    function processInput(sys, val) {
+    function handleInput(sys, val) {
         if (val.length >= 3) {
-            let full = letters[sys] + "-" + val;
+            let code = letters[sys] + "-" + val;
             let target = (sys === 'LS' ? getLsTarget() : getSbTarget());
-            let d = (sys === 'LS' ? dataLS : dataSB);
+            let currentData = (sys === 'LS' ? dataLS : dataSB);
             
-            // منع التكرار إلا في القيادة والإشراف
             let exists = false;
-            for(let k in d) if(d[k].includes(full)) exists = true;
+            for(let k in currentData) if(currentData[k].includes(code)) exists = true;
             if(exists && !["قيادة","اشراف عام","مشرف ميداني"].includes(target)) {
-                alert("الكود مسجل مسبقاً في منطقة أخرى!");
+                alert("مكرر!");
             } else {
-                d[target].push(full);
+                currentData[target].push(code);
                 history[sys].push(target);
             }
-            document.getElementById(sys === 'LS' ? 'lsInput' : 'sbInput').value = '';
+            document.getElementById(sys === 'LS' ? 'inLS' : 'inSB').value = '';
             render();
         }
     }
 
-    document.getElementById('lsInput').oninput = (e) => processInput('LS', e.target.value.replace(/\D/g,''));
-    document.getElementById('sbInput').oninput = (e) => processInput('SB', e.target.value.replace(/\D/g,''));
+    document.getElementById('inLS').oninput = (e) => handleInput('LS', e.target.value.replace(/\D/g,''));
+    document.getElementById('inSB').oninput = (e) => handleInput('SB', e.target.value.replace(/\D/g,''));
 
     function render() {
-        // رندر لوس
-        const lsGrid = document.getElementById('lsGrid'); lsGrid.innerHTML = '';
+        // لوس
+        const gLS = document.getElementById('gridLS'); gLS.innerHTML = '';
         keysLS.forEach(k => {
-            lsGrid.innerHTML += `<div class="card"><div class="card-header ls-head">${k}</div><div class="card-body">${dataLS[k].map((u,i)=>`<div class="unit-tag" onclick="removeUnit('LS','${k}',${i})">${u}</div>`).join('')}</div></div>`;
+            gLS.innerHTML += `<div class="card"><div class="card-h ls-h">${k}</div><div class="card-b">${dataLS[k].map((u,i)=>`<div class="unit" onclick="del('LS','${k}',${i})">${u}</div>`).join('')}</div></div>`;
         });
-        // رندر ساندي
-        const sbGrid = document.getElementById('sbGrid'); sbGrid.innerHTML = '';
+        // ساندي
+        const gSB = document.getElementById('gridSB'); gSB.innerHTML = '';
         keysSB.forEach(k => {
-            sbGrid.innerHTML += `<div class="card"><div class="card-header sb-head">${k}</div><div class="card-body">${dataSB[k].map((u,i)=>`<div class="unit-tag" onclick="removeUnit('SB','${k}',${i})">${u}</div>`).join('')}</div></div>`;
+            gSB.innerHTML += `<div class="card"><div class="card-h sb-h">${k}</div><div class="card-b">${dataSB[k].map((u,i)=>`<div class="unit" onclick="del('SB','${k}',${i})">${u}</div>`).join('')}</div></div>`;
         });
     }
 
     function setMode(m) {
-        mode = m;
-        document.getElementById('lsPanel').classList.toggle('active', m==='LS');
-        document.getElementById('sbPanel').classList.toggle('active', m==='SB');
-        document.getElementById('lsTab').className = 'tab' + (m==='LS'?' active-ls':'');
-        document.getElementById('sbTab').className = 'tab' + (m==='SB'?' active-sb':'');
+        currentMode = m;
+        document.getElementById('contLS').classList.toggle('active', m==='LS');
+        document.getElementById('contSB').classList.toggle('active', m==='SB');
+        document.getElementById('tabLS').className = 'tab-btn' + (m==='LS'?' active-ls':'');
+        document.getElementById('tabSB').className = 'tab-btn' + (m==='SB'?' active-sb':'');
     }
 
-    function removeUnit(sys,k,i) { if(confirm("حذف الوحدة؟")) { (sys==='LS'?dataLS:dataSB)[k].splice(i,1); render(); } }
+    function del(sys,k,i) { if(confirm("حذف؟")) { (sys==='LS'?dataLS:dataSB)[k].splice(i,1); render(); } }
     function undo(sys) { if(history[sys].length) { let t = history[sys].pop(); (sys==='LS'?dataLS:dataSB)[t].pop(); render(); } }
-    function reset(sys) { if(confirm("هل أنت متأكد من تصفير هذا القسم بالكامل؟")) { let d = (sys==='LS'?dataLS:dataSB); for(let k in d) d[k]=[]; history[sys]=[]; render(); } }
+    function reset(sys) { if(confirm("تصفير؟")) { let d = (sys==='LS'?dataLS:dataSB); for(let k in d) d[k]=[]; history[sys]=[]; render(); } }
 
     function copyReport() {
-        let sys = mode; let d = (sys==='LS'?dataLS:dataSB); let ks = (sys==='LS'?keysLS:keysSB);
-        let txt = `تقرير عمليات (${sys==='LS'?'لوس سانتوس':'ساندي و بوليتو'})\n\n`;
+        let d = (currentMode==='LS'?dataLS:dataSB); let ks = (currentMode==='LS'?keysLS:keysSB);
+        let txt = `تقرير عمليات (${currentMode==='LS'?'لوس سانتوس':'ساندي وبوليتو'})\n\n`;
         ks.forEach(k => {
             let units = d[k].length ? ( (k.includes("العمليات")) ? d[k].join(' | ')+" |" : d[k].join('\n') ) : "E-000";
             txt += `${k} :\n${units}\n\n`;
         });
-        navigator.clipboard.writeText(txt); alert("✅ تم نسخ التقرير");
+        navigator.clipboard.writeText(txt); alert("تم النسخ");
     }
 
-    // بناء أزرار الحروف
     ['LS','SB'].forEach(sys => {
-        let container = document.getElementById(sys.toLowerCase()+'Letters');
+        let container = document.getElementById('alpha' + sys);
         ['E','A','F','M','S','C','G','P','H'].forEach(l => {
-            let b = document.createElement('button'); b.className = 'letter-btn' + (l==='E'?' active':''); b.innerText = l;
-            b.onclick = () => { letters[sys] = l; container.querySelectorAll('.letter-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); };
+            let b = document.createElement('button'); b.className = 'l-btn' + (l==='E'?' active':''); b.innerText = l;
+            b.onclick = () => { letters[sys] = l; container.querySelectorAll('.l-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); };
             container.appendChild(b);
         });
     });
-
     render();
 </script>
 </body>
