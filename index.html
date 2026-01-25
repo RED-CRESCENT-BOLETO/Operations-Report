@@ -19,18 +19,21 @@
         .active-ls { background: var(--red) !important; border-color: white !important; }
         .active-sb { background: var(--blue) !important; border-color: white !important; }
         .main-input { font-size: 50px; width: 180px; text-align: center; background: #000; border: 2px solid #555; border-radius: 15px; padding: 10px; color: white; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .card { background: rgba(0,0,0,0.7); border: 1px solid #444; border-radius: 10px; overflow: hidden; }
-        .card-header { padding: 8px; text-align: center; font-weight: bold; font-size: 14px; }
+        
+        /* تعديل تكبير البوكسات هنا */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .card { background: rgba(0,0,0,0.7); border: 1px solid #444; border-radius: 12px; overflow: hidden; min-height: 140px; } /* تم زيادة الطول الأدنى */
+        .card-header { padding: 12px; text-align: center; font-weight: bold; font-size: 18px; } /* تكبير خط العنوان */
+        
         .ls-header { background: var(--red); }
         .sb-header { background: var(--blue); }
         .card-purple .card-header { background: var(--purple) !important; }
         .card-white .card-header { background: var(--white) !important; color: black; }
-        .card-body { padding: 10px; display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; min-height: 40px; }
-        .tag { background: #000; border: 1px solid #444; padding: 5px 8px; border-radius: 5px; font-weight: bold; position: relative; cursor: pointer; font-size: 12px; }
-        .tag-menu { display: none; position: absolute; top: 100%; right: 0; background: #222; z-index: 100; border: 1px solid #555; width: 90px; }
+        .card-body { padding: 15px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; min-height: 60px; }
+        .tag { background: #000; border: 1px solid #444; padding: 8px 12px; border-radius: 6px; font-weight: bold; position: relative; cursor: pointer; font-size: 14px; }
+        .tag-menu { display: none; position: absolute; top: 100%; right: 0; background: #222; z-index: 100; border: 1px solid #555; width: 110px; }
         .tag:hover .tag-menu { display: block; }
-        .tag-menu div { padding: 8px; border-bottom: 1px solid #333; cursor: pointer; text-align: center; }
+        .tag-menu div { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; text-align: center; }
         .bottom-actions { position: fixed; bottom: 0; left: 0; right: 0; background: #050505; padding: 20px; display: flex; justify-content: center; border-top: 3px solid #444; gap: 20px; z-index: 1000; }
         .btn-side { padding: 10px 15px; background: #333; color: white; border-radius: 8px; cursor: pointer; border: 1px solid #555; font-weight: bold; }
     </style>
@@ -124,14 +127,10 @@
         if (el.value.length >= limit) {
             let code = config[sys].let + "-" + el.value;
             let d = (sys === 'LS' ? dataLS : dataSB);
-            
-            // منع التكرار
             let exists = false;
             for(let k in d) if(d[k].includes(code)) exists = true;
             if(exists) { alert("⚠️ الكود مكرر!"); el.value = ''; return; }
-
             let target = (d["العمليات"].length === 0) ? "العمليات" : (d["نائب العمليات"].length === 0 ? "نائب العمليات" : (sys === 'LS' ? logicLS(d) : logicSB(d)));
-            
             d[target].push(code);
             config[sys].hist.push({t: target, c: code});
             el.value = ''; render(sys);
@@ -160,7 +159,6 @@
         const d = (sys === 'LS' ? dataLS : dataSB);
         const fK = (sys === 'LS') ? ["العمليات", "نائب العمليات", "لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["العمليات", "نائب العمليات", "سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"];
         const aK = ["القيادة", "اشراف عام", "مشرف ميداني", "وحدات البحث و الانقاذ", "الميناء", "دعم"];
-        
         const draw = (k) => {
             let cl = ["القيادة","اشراف عام","مشرف ميداني"].includes(k) ? 'card-purple' : (["وحدات البحث و الانقاذ","الميناء","دعم"].includes(k) ? 'card-white' : '');
             let tags = d[k].map((u, i) => `<div class="tag">${u}<div class="tag-menu"><div onclick="moveOut('${sys}','${k}',${i})">➡️ خروج</div><div onclick="delUnit('${sys}','${k}',${i})">❌ حذف</div></div></div>`).join('');
@@ -174,7 +172,6 @@
 
     function moveOut(sys, k, i) { (sys==='LS'?dataLS:dataSB)["تسجيل الخروج"].push((sys==='LS'?dataLS:dataSB)[k].splice(i, 1)[0]); rebalance(sys); }
     function delUnit(sys, k, i) { (sys==='LS'?dataLS:dataSB)[k].splice(i, 1); rebalance(sys); }
-    
     function rebalance(sys) {
         let d = (sys==='LS'?dataLS:dataSB); 
         let ks = (sys==='LS') ? ["لام 1","لام 2","لام 3","لام 4","لام 5","فرسان"] : ["سين 1","باء 1","سين","جيم 1","باء","جيم 2"];
