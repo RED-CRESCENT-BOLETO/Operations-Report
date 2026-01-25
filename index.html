@@ -2,37 +2,47 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>EMS System - Professional Separation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMS TOTAL SYSTEM - V10 FINAL</title>
     <style>
         :root { --red: #b32633; --blue: #0056b3; --gold: #ffd700; --bg: #0a0a0a; --purple: #6a1b9a; --white: #ffffff; }
-        body { font-family: 'Segoe UI', sans-serif; background: #111 url('https://i.top4top.io/p_3592jzcr01.jpg') no-repeat center center fixed; background-size: cover; color: white; margin: 0; padding: 10px; padding-bottom: 120px; }
-        .overlay-bg { background: rgba(0,0,0,0.95); min-height: 100vh; padding: 20px; border-radius: 15px; }
-        .mode-selection { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; }
-        .btn-mode { flex: 1; max-width: 400px; padding: 18px; font-size: 22px; font-weight: 900; border-radius: 12px; border: 3px solid #333; cursor: pointer; color: white; background: #222; }
+        body { font-family: 'Segoe UI', sans-serif; background: #000 url('https://i.top4top.io/p_3592jzcr01.jpg') no-repeat center center fixed; background-size: cover; color: white; margin: 0; padding: 0; }
+        .overlay-bg { background: rgba(0,0,0,0.96); min-height: 100vh; padding: 20px; box-sizing: border-box; }
+        
+        .mode-selection { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .btn-mode { flex: 1; max-width: 350px; padding: 15px; font-size: 20px; font-weight: 900; border-radius: 10px; border: 2px solid #444; cursor: pointer; color: white; background: #1a1a1a; transition: 0.3s; }
         #lsTabBtn.active { background: var(--red); border-color: white; box-shadow: 0 0 15px var(--red); }
         #sbTabBtn.active { background: var(--blue); border-color: white; box-shadow: 0 0 15px var(--blue); }
+
         .system-container { display: none; }
         .system-container.active { display: block; }
-        .info-bar { display: flex; justify-content: space-between; align-items: center; background: var(--bg); padding: 12px; border-radius: 10px; margin-bottom: 20px; border-bottom: 4px solid #444; }
-        .main-controls { background: rgba(0,0,0,0.85); padding: 25px; border-radius: 20px; border: 1px solid #555; margin-bottom: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        .let-btn { width: 50px; height: 50px; border: 2px solid #444; background: #222; color: white; border-radius: 10px; cursor: pointer; font-weight: bold; }
+
+        .info-bar { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 12px; border-radius: 10px; margin-bottom: 20px; border-bottom: 4px solid #444; }
+        .main-controls { background: rgba(20,20,20,0.95); padding: 25px; border-radius: 20px; border: 1px solid #555; margin-bottom: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        
+        .let-btn { width: 45px; height: 45px; border: 2px solid #444; background: #222; color: white; border-radius: 8px; cursor: pointer; font-weight: bold; }
         .active-ls { background: var(--red) !important; border-color: white !important; }
         .active-sb { background: var(--blue) !important; border-color: white !important; }
-        .main-input { font-size: 50px; width: 180px; text-align: center; background: #000; border: 2px solid #555; border-radius: 15px; padding: 10px; color: white; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .card { background: rgba(0,0,0,0.7); border: 1px solid #444; border-radius: 10px; overflow: hidden; }
-        .card-header { padding: 8px; text-align: center; font-weight: bold; font-size: 14px; }
+        
+        .main-input { font-size: 50px; width: 220px; text-align: center; background: #000; border: 2px solid #555; border-radius: 15px; padding: 10px; color: white; outline: none; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        
+        .card { background: rgba(10,10,10,0.85); border: 1px solid #444; border-radius: 12px; overflow: hidden; }
+        .card-header { padding: 10px; text-align: center; font-weight: bold; font-size: 14px; color: white; }
         .ls-header { background: var(--red); }
         .sb-header { background: var(--blue); }
         .card-purple .card-header { background: var(--purple) !important; }
         .card-white .card-header { background: var(--white) !important; color: black; }
-        .card-body { padding: 10px; display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; min-height: 40px; }
-        .tag { background: #000; border: 1px solid #444; padding: 5px 8px; border-radius: 5px; font-weight: bold; position: relative; cursor: pointer; font-size: 12px; }
-        .tag-menu { display: none; position: absolute; top: 100%; right: 0; background: #222; z-index: 100; border: 1px solid #555; width: 90px; }
+        
+        .card-body { padding: 12px; display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; min-height: 50px; }
+        .tag { background: #000; border: 1px solid #444; padding: 6px 10px; border-radius: 5px; font-weight: bold; cursor: pointer; position: relative; font-size: 13px; }
+        .tag-menu { display: none; position: absolute; bottom: 100%; right: 0; background: #222; z-index: 100; border: 1px solid #666; width: 100px; border-radius: 5px; }
         .tag:hover .tag-menu { display: block; }
-        .tag-menu div { padding: 8px; border-bottom: 1px solid #333; cursor: pointer; text-align: center; }
-        .bottom-actions { position: fixed; bottom: 0; left: 0; right: 0; background: #050505; padding: 20px; display: flex; justify-content: center; border-top: 3px solid #444; gap: 20px; z-index: 1000; }
-        .btn-side { padding: 10px 15px; background: #333; color: white; border-radius: 8px; cursor: pointer; border: 1px solid #555; font-weight: bold; }
+        .tag-menu div { padding: 10px; border-bottom: 1px solid #333; text-align: center; font-size: 12px; }
+        .tag-menu div:hover { background: #b32633; color: white; }
+
+        .bottom-actions { position: fixed; bottom: 0; left: 0; right: 0; background: #050505; padding: 20px; display: flex; justify-content: center; border-top: 3px solid #444; gap: 20px; z-index: 2000; }
+        .btn-side { padding: 12px 20px; background: #333; color: white; border-radius: 8px; cursor: pointer; border: 1px solid #555; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -44,63 +54,65 @@
     </div>
 
     <div id="systemLS" class="system-container active">
-        <div class="info-bar" style="border-color: var(--red);">
-            <div>تقرير LS رقم: <span id="repNumLS" onclick="changeRepNum('LS')" style="color:var(--gold); cursor:pointer;">1</span></div>
-            <div id="clockLS" style="color:var(--gold); font-weight:bold;">00:00:00</div>
+        <div class="info-bar" style="border-right: 5px solid var(--red);">
+            <div>تقرير LS رقم: <span id="repNumLS" onclick="changeRepNum('LS')" style="color:var(--gold); cursor:pointer; font-weight:bold;">1</span></div>
+            <div class="clock" style="color:var(--gold); font-family: monospace; font-size: 18px;">00:00:00</div>
         </div>
         <div class="main-controls">
-            <div style="display:flex; gap:10px;">
-                <button class="btn-side" style="background:#27ae60;" onclick="shuffleField('LS')">🔄 عشوائي</button>
-                <button class="btn-side" style="background:#600;" onclick="resetSys('LS')">⚠️ تصفير LS</button>
-            </div>
-            <div id="lettersLS" class="letter-group" style="display:flex; gap:5px;"></div>
-            <div style="display:flex; align-items:center; gap:10px;">
+            <div id="lettersLS" class="letter-group" style="display:flex; gap:8px; margin-bottom: 10px;"></div>
+            <div style="display:flex; align-items:center; gap:15px;">
                 <button class="btn-side" onclick="toggleDigits('LS')" id="digitBtnLS">3 أرقام</button>
-                <input type="text" id="inputLS" class="main-input" style="border-color:var(--red);" placeholder="000" maxlength="4" oninput="handleInput('LS', this)">
+                <input type="text" id="inputLS" class="main-input" placeholder="000" maxlength="4" oninput="handleInput('LS', this)">
                 <button class="btn-side" onclick="undo('LS')">↩️ تراجع</button>
             </div>
+            <button class="btn-side" style="background:#1e7e34; width: 220px;" onclick="shuffleField('LS')">🔄 عشوائي الميدان</button>
         </div>
-        <div class="grid" id="gridFieldLS"></div>
         <div class="grid" id="gridAdminLS"></div>
+        <div class="grid" id="gridFieldLS"></div>
         <div class="grid" id="gridExitLS"></div>
     </div>
 
     <div id="systemSB" class="system-container">
-        <div class="info-bar" style="border-color: var(--blue);">
-            <div>تقرير SB رقم: <span id="repNumSB" onclick="changeRepNum('SB')" style="color:var(--gold); cursor:pointer;">1</span></div>
-            <div id="clockSB" style="color:var(--gold); font-weight:bold;">00:00:00</div>
+        <div class="info-bar" style="border-right: 5px solid var(--blue);">
+            <div>تقرير SB رقم: <span id="repNumSB" onclick="changeRepNum('SB')" style="color:var(--gold); cursor:pointer; font-weight:bold;">1</span></div>
+            <div class="clock" style="color:var(--gold); font-family: monospace; font-size: 18px;">00:00:00</div>
         </div>
         <div class="main-controls">
-            <div style="display:flex; gap:10px;">
-                <button class="btn-side" style="background:#27ae60;" onclick="shuffleField('SB')">🔄 عشوائي</button>
-                <button class="btn-side" style="background:#600;" onclick="resetSys('SB')">⚠️ تصفير SB</button>
-            </div>
-            <div id="lettersSB" class="letter-group" style="display:flex; gap:5px;"></div>
-            <div style="display:flex; align-items:center; gap:10px;">
+            <div id="lettersSB" class="letter-group" style="display:flex; gap:8px; margin-bottom: 10px;"></div>
+            <div style="display:flex; align-items:center; gap:15px;">
                 <button class="btn-side" onclick="toggleDigits('SB')" id="digitBtnSB">3 أرقام</button>
-                <input type="text" id="inputSB" class="main-input" style="border-color:var(--blue);" placeholder="000" maxlength="4" oninput="handleInput('SB', this)">
+                <input type="text" id="inputSB" class="main-input" placeholder="000" maxlength="4" oninput="handleInput('SB', this)">
                 <button class="btn-side" onclick="undo('SB')">↩️ تراجع</button>
             </div>
+            <button class="btn-side" style="background:#1e7e34; width: 220px;" onclick="shuffleField('SB')">🔄 عشوائي الميدان</button>
         </div>
-        <div class="grid" id="gridFieldSB"></div>
         <div class="grid" id="gridAdminSB"></div>
+        <div class="grid" id="gridFieldSB"></div>
         <div class="grid" id="gridExitSB"></div>
     </div>
 </div>
 
 <div class="bottom-actions">
-    <button onclick="copyAction()" style="padding:15px 120px; background:#218838; color:white; border-radius:10px; font-weight:bold; font-size:22px; cursor:pointer; border:none;">📋 نسخ التقرير</button>
+    <button onclick="copyAction()" style="padding:15px 120px; background:#218838; color:white; border-radius:12px; font-weight:bold; font-size:24px; cursor:pointer; border:none; box-shadow: 0 4px 15px rgba(0,0,0,0.4);">📋 نسخ التقرير</button>
+    <button onclick="resetSys()" style="padding:15px 30px; background:#721c24; color:white; border-radius:12px; font-weight:bold; cursor:pointer; border:none;">⚠️ تصفير</button>
 </div>
 
 <script>
     let currentSystem = 'LS';
-    const config = { 
-        LS: { let: 'E', dig: 3, hist: [], storage: 'DATA_LS_V5' }, 
-        SB: { let: 'E', dig: 3, hist: [], storage: 'DATA_SB_V5' } 
-    };
+    const config = { LS: { let:'E', dig:3, hist:[], storage:'EMS_PRO_LOCKED_LS' }, SB: { let:'E', dig:3, hist:[], storage:'EMS_PRO_LOCKED_SB' } };
+    
+    // الوحدات الإدارية المستثناة من إعادة التوزيع التلقائي
+    const adminKeys = ["العمليات", "نائب العمليات", "الالقيادة", "اشراف عام", "مشرف ميداني", "وحدات البحث و الانقاذ", "دعم", "الميناء"];
+    const allowDuplicate = ["الالقيادة", "اشراف عام", "مشرف ميداني"];
 
-    let dataLS = { "العمليات":[], "نائب العمليات":[], "لام 2":[], "لام 4":[], "لام 3":[], "لام 1":[], "فرسان":[], "لام 5":[], "القيادة":[], "اشراف عام":[], "مشرف ميداني":[], "وحدات البحث و الانقاذ":[], "دعم":[], "تسجيل الخروج":[] };
-    let dataSB = { "العمليات":[], "نائب العمليات":[], "سين 1":[], "باء 1":[], "سين":[], "جيم 1":[], "باء":[], "جيم 2":[], "القيادة":[], "اشراف عام":[], "مشرف ميداني":[], "وحدات البحث و الانقاذ":[], "دعم":[], "تسجيل الخروج":[] };
+    let dataLS = initData();
+    let dataSB = initData();
+
+    function initData() {
+        let d = {};
+        ["العمليات", "نائب العمليات", "الالقيادة", "اشراف عام", "مشرف ميداني", "وحدات البحث و الانقاذ", "دعم", "الميناء", "لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان", "سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2", "تسجيل الخروج"].forEach(k => d[k] = []);
+        return d;
+    }
 
     function handleInput(sys, el) {
         el.value = el.value.replace(/[^0-9]/g, '');
@@ -108,8 +120,11 @@
         if (el.value.length >= limit) {
             let code = config[sys].let + "-" + el.value;
             let d = (sys === 'LS' ? dataLS : dataSB);
-            let target = "";
+            
+            // منع تكرار الكود
+            if (isDuplicate(d, code)) { alert("الكود مكرر!"); el.value = ''; return; }
 
+            let target = "";
             if (d["العمليات"].length === 0) target = "العمليات";
             else if (d["نائب العمليات"].length === 0) target = "نائب العمليات";
             else target = (sys === 'LS') ? logicLS(d) : logicSB(d);
@@ -120,112 +135,117 @@
         }
     }
 
-    function logicLS(d) {
-        let n = d["لام 2"].length + d["لام 4"].length + d["لام 3"].length + d["لام 1"].length + d["فرسان"].length + d["لام 5"].length;
-        if (n === 0) return "لام 2"; if (n === 1) return "لام 4"; if (n === 2) return "لام 3"; if (n === 3) return "لام 1"; if (n === 4) return "فرسان";
-        if (n === 5) return "لام 2"; if (n === 6) return "لام 4"; if (n === 7) return "لام 3"; if (n === 8) return "لام 1";
-        if (n === 9) return "لام 2"; if (n === 10) return "لام 4"; if (n === 11) return "لام 1"; if (n === 12) return "لام 5";
-        const cycle = ["لام 2", "لام 4", "لام 3", "لام 1", "لام 5", "فرسان"]; return cycle[(n - 13) % 6] || "لام 2";
+    function isDuplicate(data, code) {
+        for (let k in data) {
+            if (!allowDuplicate.includes(k) && data[k].includes(code)) return true;
+        }
+        return false;
     }
 
-    // --- منطق ساندي وبوليتو (تطبيق حرفي للنص المرسل) ---
+    function logicLS(d) {
+        let n = d["لام 2"].length + d["لام 4"].length + d["لام 3"].length + d["لام 1"].length + d["فرسان"].length + d["لام 5"].length;
+        const seq = ["لام 2","لام 4","لام 3","لام 1","فرسان","لام 2","لام 4","لام 3","لام 1","لام 2","لام 4","لام 1","لام 5"];
+        return (n < 13) ? seq[n] : ["لام 2","لام 4","لام 3","لام 1","لام 5","فرسان"][(n-13)%6];
+    }
+
     function logicSB(d) {
         let n = d["سين 1"].length + d["باء 1"].length + d["سين"].length + d["جيم 1"].length + d["باء"].length + d["جيم 2"].length;
-        
-        // n=0: سين 1 (1)
-        if (n === 0) return "سين 1";
-        // n=1: باء 1 (1)
-        if (n === 1) return "باء 1";
-        // n=2: سين (1)
-        if (n === 2) return "سين";
-        // n=3: جيم 1 (1)
-        if (n === 3) return "جيم 1";
-        // n=4: باء (1)
-        if (n === 4) return "باء";
-        // n=5: سين 1 تصبح (2)
-        if (n === 5) return "سين 1";
-        // n=6: باء 1 تصبح (2)
-        if (n === 6) return "باء 1";
-        // n=7: سين تصبح (2)
-        if (n === 7) return "سين";
-        // n=8: جيم 1 تصبح (2)
-        if (n === 8) return "جيم 1";
-        // n=9: باء تصبح (2)
-        if (n === 9) return "باء";
-        // n=10: سين 1 تصبح (3)
-        if (n === 10) return "سين 1";
-        // n=11: باء 1 تصبح (3)
-        if (n === 11) return "باء 1";
-        // n=12: سين تصبح (3)
-        if (n === 12) return "سين";
-        // n=13: جيم 1 تصبح (3)
-        if (n === 13) return "جيم 1";
-        // n=14: سين 1 تصبح (4)
-        if (n === 14) return "سين 1";
-        // n=15: سين تصبح (4)
-        if (n === 15) return "سين";
-        // n=16: باء تصبح (3)
-        if (n === 16) return "باء";
-        // n=17: باء تصبح (4)
-        if (n === 17) return "باء";
-        // n=18: جيم 2 تصبح (1)
-        if (n === 18) return "جيم 2";
-        // n=19: جيم 2 تصبح (2)
-        if (n === 19) return "جيم 2";
-        // n=20: جيم 2 تصبح (3)
-        if (n === 20) return "جيم 2";
-        
-        // بعد الاكتفاء التام (العودة للأولوية من البداية)
-        const cycle = ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"];
-        return cycle[(n - 21) % 6] || "سين 1";
+        const seq = ["سين 1","باء 1","سين","جيم 1","باء","سين 1","باء 1","سين","جيم 1","باء","سين 1","باء 1","سين","جيم 1","سين 1","سين","باء","باء","جيم 2","جيم 2","جيم 2"];
+        return (n < 21) ? seq[n] : ["سين 1","باء 1","سين","جيم 1","باء","جيم 2"][(n-21)%6];
     }
 
     function render(sys) {
         const d = (sys === 'LS' ? dataLS : dataSB);
-        const fK = (sys === 'LS') ? ["العمليات", "نائب العمليات", "لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["العمليات", "نائب العمليات", "سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"];
-        const aK = ["القيادة", "اشراف عام", "مشرف ميداني", "وحدات البحث و الانقاذ", "دعم"];
+        const fK = (sys === 'LS') ? ["لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"];
         
         const draw = (k) => {
-            let cl = aK.slice(0,3).includes(k) ? 'card-purple' : (aK.slice(3).includes(k) ? 'card-white' : '');
-            let tags = d[k].map((u, i) => `<div class="tag">${u}<div class="tag-menu"><div onclick="moveOut('${sys}','${k}',${i})">➡️ خروج</div><div onclick="delUnit('${sys}','${k}',${i})">❌ حذف</div></div></div>`).join('');
+            let cl = (k==="الالقيادة"||k==="اشراف عام"||k==="مشرف ميداني") ? 'card-purple' : (k==="وحدات البحث و الانقاذ"||k==="دعم"||k==="الميناء" ? 'card-white' : '');
+            let tags = d[k].map((u, i) => `
+                <div class="tag" onclick="manualEdit('${sys}','${k}',${i})">
+                    ${u}
+                    <div class="tag-menu">
+                        <div onclick="moveOut('${sys}','${k}',${i})">➡️ خروج</div>
+                        <div onclick="delUnit('${sys}','${k}',${i})">❌ حذف</div>
+                    </div>
+                </div>`).join('');
             return `<div class="card ${cl}"><div class="card-header ${(sys==='LS'?'ls-header':'sb-header')}">${k}</div><div class="card-body">${tags}</div></div>`;
         };
+
+        document.getElementById(`gridAdmin${sys}`).innerHTML = adminKeys.map(draw).join('');
         document.getElementById(`gridField${sys}`).innerHTML = fK.map(draw).join('');
-        document.getElementById(`gridAdmin${sys}`).innerHTML = aK.map(draw).join('');
         document.getElementById(`gridExit${sys}`).innerHTML = draw("تسجيل الخروج");
         localStorage.setItem(config[sys].storage, JSON.stringify(d));
     }
 
-    function moveOut(sys, k, i) { (sys==='LS'?dataLS:dataSB)["تسجيل الخروج"].push((sys==='LS'?dataLS:dataSB)[k].splice(i, 1)[0]); rebalance(sys); }
-    function delUnit(sys, k, i) { (sys==='LS'?dataLS:dataSB)[k].splice(i, 1); rebalance(sys); }
-    function rebalance(sys) {
-        let d = (sys==='LS'?dataLS:dataSB); let ks = (sys==='LS')?["لام 1","لام 2","لام 3","لام 4","لام 5","فرسان"]:["سين 1","باء 1","سين","جيم 1","باء","جيم 2"];
-        let p = []; ks.forEach(k=>{p.push(...d[k]); d[k]=[];}); p.forEach(c=>{ let t=(sys==='LS'?logicLS(d):logicSB(d)); d[t].push(c); }); render(sys);
+    function manualEdit(sys, k, i) {
+        if (!adminKeys.includes(k)) return;
+        let d = (sys==='LS'?dataLS:dataSB);
+        let val = prompt("تعديل الكود يدوياً:", d[k][i]);
+        if (val) { d[k][i] = val; render(sys); }
     }
-    function undo(sys) { if(config[sys].hist.length){ let l=config[sys].hist.pop(); (sys==='LS'?dataLS:dataSB)[l.t].pop(); render(sys); } }
-    function shuffleField(sys) { let d=(sys==='LS'?dataLS:dataSB); let ks=(sys==='LS')?["لام 1","لام 2","لام 3","لام 4","لام 5","فرسان"]:["سين 1","باء 1","سين","جيم 1","باء","جيم 2"]; let p=[]; let cs={}; ks.forEach(k=>{cs[k]=d[k].length; p.push(...d[k]); d[k]=[];}); p.sort(()=>Math.random()-0.5); ks.forEach(k=>{for(let i=0;i<cs[k];i++) if(p.length) d[k].push(p.shift());}); render(sys); }
-    function switchSystem(sys) { currentSystem = sys; document.querySelectorAll('.system-container').forEach(c => c.classList.remove('active')); document.getElementById(`system${sys}`).classList.add('active'); document.getElementById('lsTabBtn').classList.toggle('active', sys==='LS'); document.getElementById('sbTabBtn').classList.toggle('active', sys==='SB'); }
-    function toggleDigits(sys) { config[sys].dig = (config[sys].dig===3?4:3); document.getElementById(`digitBtn${sys}`).innerText = config[sys].dig + " أرقام"; }
-    function changeRepNum(sys) { let n = prompt("رقم التقرير:"); if(n) document.getElementById(`repNum${sys}`).innerText = n; }
-    function resetSys(sys) { if(confirm("تصفير بيانات هذه المدينة؟")){ localStorage.removeItem(config[sys].storage); location.reload(); } }
+
+    function moveOut(sys, k, i) {
+        let d = (sys==='LS'?dataLS:dataSB);
+        let unit = d[k].splice(i, 1)[0];
+        d["تسجيل الخروج"].push(unit);
+        if (!adminKeys.includes(k)) rebalance(sys);
+        render(sys);
+    }
+
+    function delUnit(sys, k, i) {
+        let d = (sys==='LS'?dataLS:dataSB);
+        d[k].splice(i, 1);
+        if (!adminKeys.includes(k)) rebalance(sys);
+        render(sys);
+    }
+
+    function rebalance(sys) {
+        let d = (sys==='LS'?dataLS:dataSB);
+        let ks = (sys==='LS') ? ["لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"];
+        let p = []; ks.forEach(k => { p.push(...d[k]); d[k] = []; });
+        p.forEach(u => { let t = (sys==='LS'?logicLS(d):logicSB(d)); d[t].push(u); });
+    }
+
+    function shuffleField(sys) {
+        let d = (sys==='LS'?dataLS:dataSB);
+        let ks = (sys==='LS') ? ["لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"];
+        let p = []; ks.forEach(k => { p.push(...d[k]); d[k] = []; });
+        p.sort(() => Math.random() - 0.5);
+        p.forEach(u => { let t = (sys==='LS'?logicLS(d):logicSB(d)); d[t].push(u); });
+        render(sys);
+    }
+
+    function switchSystem(sys) {
+        currentSystem = sys;
+        document.querySelectorAll('.system-container').forEach(c => c.classList.remove('active'));
+        document.getElementById(`system${sys}`).classList.add('active');
+        document.getElementById('lsTabBtn').classList.toggle('active', sys==='LS');
+        document.getElementById('sbTabBtn').classList.toggle('active', sys==='SB');
+    }
 
     function copyAction() {
         const sys = currentSystem; const d = (sys==='LS'?dataLS:dataSB); const r = document.getElementById(`repNum${sys}`).innerText;
-        const now = new Date(); const days = ["الأحد","الأثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
-        let txt = `تقرير ( ${sys==='LS'?'لوس سانتوس':'ساندي وبوليتو'} ) رقم ( ${r} )\nاليوم: ${days[now.getDay()]} | التاريخ: ${now.toLocaleDateString()}\n\n`;
-        Object.keys(d).forEach(k => { let u = d[k].length ? (k.includes("العمليات")?d[k].join(" | "):d[k].join("\n")) : "E-000"; txt += `${k} :\n${u}\n\n`; });
-        navigator.clipboard.writeText(txt).then(() => alert("✅ تم نسخ تقرير "+sys));
+        let txt = `تقرير ${sys==='LS'?'لوس سانتوس':'ساندي وبوليتو'} رقم (${r})\nالتوقيت: ${new Date().toLocaleTimeString()}\n\n`;
+        for (let k in d) if (d[k].length) txt += `${k}:\n${d[k].join(k.includes("العمليات")?" | ":" \n")}\n\n`;
+        navigator.clipboard.writeText(txt).then(() => alert("✅ تم النسخ بنجاح"));
     }
 
+    function resetSys() { if(confirm("سيتم مسح جميع البيانات، هل أنت متأكد؟")) { localStorage.clear(); location.reload(); } }
+    function toggleDigits(sys) { config[sys].dig = (config[sys].dig===3?4:3); document.getElementById(`digitBtn${sys}`).innerText = config[sys].dig + " أرقام"; }
+    function changeRepNum(sys) { let n = prompt("رقم التقرير:"); if(n) document.getElementById(`repNum${sys}`).innerText = n; }
+    function undo(sys) { if(config[sys].hist.length){ let l=config[sys].hist.pop(); (sys==='LS'?dataLS:dataSB)[l.t].pop(); render(sys); } }
+
+    // إنشاء أزرار الأحرف
     ['LS','SB'].forEach(sys => {
         ['E','A','F','M','S','C','G','P','H'].forEach(l => {
             let b = document.createElement('button'); b.className = 'let-btn' + (l === 'E' ? ` active-${sys.toLowerCase()}` : ''); b.innerText = l;
             b.onclick = () => { config[sys].let = l; document.querySelectorAll(`#letters${sys} .let-btn`).forEach(x => x.classList.remove(`active-ls`,`active-sb`)); b.classList.add(`active-${sys.toLowerCase()}`); };
             document.getElementById(`letters${sys}`).appendChild(b);
         });
-        const saved = JSON.parse(localStorage.getItem(config[sys].storage)); if(saved) { if(sys==='LS') dataLS = saved; else dataSB = saved; }
+        const saved = JSON.parse(localStorage.getItem(config[sys].storage));
+        if(saved) { if(sys==='LS') dataLS = saved; else dataSB = saved; }
     });
-    setInterval(() => { let t = new Date().toLocaleTimeString('en-GB'); document.getElementById('clockLS').innerText = t; document.getElementById('clockSB').innerText = t; }, 1000);
+    setInterval(() => { document.querySelectorAll('.clock').forEach(c => c.innerText = new Date().toLocaleTimeString('ar-EG')); }, 1000);
     render('LS'); render('SB');
 </script>
 </body>
