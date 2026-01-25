@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>EMS SYSTEM - V14 4-DIGITS ENABLED</title>
+    <title>EMS SYSTEM - V16 SMART DUPLICATION</title>
     <style>
         :root { --red: #b32633; --blue: #0056b3; --gold: #ffd700; --bg: #0a0a0a; --purple: #6a1b9a; --white: #ffffff; }
         body { font-family: 'Segoe UI', sans-serif; background: #111 url('https://i.top4top.io/p_3592jzcr01.jpg') no-repeat center center fixed; background-size: cover; color: white; margin: 0; padding: 10px; padding-bottom: 120px; }
@@ -37,9 +37,9 @@
 
         .card-body { padding: 10px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
         .tag { background: #000; border: 1px solid #444; padding: 6px 14px; border-radius: 6px; font-weight: bold; position: relative; cursor: pointer; }
-        .tag-menu { display: none; position: absolute; top: 100%; right: 0; background: #222; z-index: 100; border: 1px solid #555; width: 120px; border-radius: 5px; }
+        .tag-menu { display: none; position: absolute; top: 100%; right: 0; background: #222; z-index: 100; border: 1px solid #555; width: 120px; border-radius: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
         .tag:hover .tag-menu { display: block; }
-        .tag-menu div { padding: 10px; border-bottom: 1px solid #333; text-align: center; font-size: 14px; }
+        .tag-menu div { padding: 10px; border-bottom: 1px solid #333; text-align: center; font-size: 14px; color: white; }
         .tag-menu div:hover { background: #444; }
 
         .bottom-actions { position: fixed; bottom: 0; left: 0; right: 0; background: #050505; padding: 20px; display: flex; justify-content: center; border-top: 3px solid #444; z-index: 1000; }
@@ -121,8 +121,8 @@
 <script>
     let currentSystem = 'LS';
     const config = {
-        LS: { activeLet: 'E', digits: 3, history: [], storageKey: 'EMS_V14_LS', rep: 1 },
-        SB: { activeLet: 'E', digits: 3, history: [], storageKey: 'EMS_V14_SB', rep: 1 }
+        LS: { activeLet: 'E', digits: 3, history: [], storageKey: 'EMS_V16_LS', rep: 1 },
+        SB: { activeLet: 'E', digits: 3, history: [], storageKey: 'EMS_V16_SB', rep: 1 }
     };
 
     const keysLS = ["قيادة", "اشراف عام", "مشرف ميداني", "العمليات", "نائب العمليات", "لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان", "دعم", "الميناء", "وحدات البحث و الانقاذ", "تسجيل خروج"];
@@ -138,10 +138,30 @@
         if (el.value.length >= targetDigits) {
             let fullCode = config[sys].activeLet + "-" + el.value;
             let target = getAutoTarget(sys);
+            
+            // ميزة منع التكرار مع الاستثناءات
+            if (isDuplicate(sys, fullCode, target)) {
+                alert("هذا الكود موجود مسبقاً في التقرير!");
+                el.value = '';
+                return;
+            }
+
             (sys === 'LS' ? dataLS : dataSB)[target].push(fullCode);
             config[sys].history.push({target: target, code: fullCode});
             el.value = ''; render(sys);
         }
+    }
+
+    function isDuplicate(sys, code, target) {
+        // استثناء أقسام القيادة من منع التكرار
+        const exceptions = ["قيادة", "اشراف عام", "مشرف ميداني"];
+        if (exceptions.includes(target)) return false;
+
+        let d = (sys === 'LS' ? dataLS : dataSB);
+        for (let key in d) {
+            if (d[key].includes(code)) return true;
+        }
+        return false;
     }
 
     function getAutoTarget(sys) {
@@ -164,13 +184,42 @@
 
         const draw = (k) => {
             let cls = ["قيادة","اشراف عام","مشرف ميداني"].includes(k) ? 'card-purple' : (["دعم","الميناء","وحدات البحث و الانقاذ"].includes(k) ? 'card-white' : '');
-            let tags = d[k].map((u, i) => `<div class="tag">${u}<div class="tag-menu"><div onclick="deleteUnit('${sys}','${k}',${i})">❌ حذف</div></div></div>`).join('');
+            let tags = d[k].map((u, i) => `
+                <div class="tag">${u}
+                    <div class="tag-menu">
+                        <div onclick="moveToExit('${sys}','${k}',${i})">➡️ خروج</div>
+                        <div onclick="deleteUnit('${sys}','${k}',${i})">❌ حذف</div>
+                    </div>
+                </div>`).join('');
             return `<div class="card ${cls}"><div class="card-header ${(sys==='LS'?'ls-header':'sb-header')}">${k}</div><div class="card-body">${tags}</div></div>`;
         };
 
         document.getElementById(`gridAdmin${sys}`).innerHTML = adminList.map(draw).join('');
         document.getElementById(`gridField${sys}`).innerHTML = fieldList.map(draw).join('');
         document.getElementById(`gridExit${sys}`).innerHTML = draw("تسجيل خروج");
+        localStorage.setItem(config[sys].storageKey, JSON.stringify({data: d, rep: config[sys].rep, digits: config[sys].digits}));
+    }
+
+    function moveToExit(sys, k, i) {
+        if (k === "تسجيل خروج") return;
+        let d = (sys === 'LS' ? dataLS : dataSB);
+        let unit = d[k].splice(i, 1)[0];
+        d["تسجيل خروج"].push(unit);
+        render(sys);
+    }
+
+    function deleteUnit(sys, k, i) {
+        (sys === 'LS' ? dataLS : dataSB)[k].splice(i, 1);
+        render(sys);
+    }
+
+    function shuffleField(sys) {
+        let d = (sys === 'LS' ? dataLS : dataSB);
+        let fieldOnly = (sys === 'LS') ? ["لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["سين 1", "سين", "باء 1", "باء", "جيم 1", "جيم 2"];
+        let pool = []; fieldOnly.forEach(k => { pool.push(...d[k]); d[k] = []; });
+        pool.sort(() => Math.random() - 0.5);
+        pool.forEach(u => { d[getAutoTarget(sys)].push(u); });
+        render(sys);
     }
 
     function copyCurrentReport() {
@@ -200,10 +249,17 @@
         document.getElementById('sbTabBtn').classList.toggle('active', sys === 'SB');
     }
 
-    function manualAdd(sys, k) { let n = prompt("الكود:"); if(n) { (sys === 'LS' ? dataLS : dataSB)[k].push(config[sys].activeLet + "-" + n); render(sys); } }
-    function deleteUnit(sys, k, i) { (sys === 'LS' ? dataLS : dataSB)[k].splice(i, 1); render(sys); }
+    function manualAdd(sys, k) { 
+        let n = prompt("الكود:"); 
+        if(n) { 
+            let full = config[sys].activeLet + "-" + n.replace(/\D/g,'');
+            if (isDuplicate(sys, full, k)) { alert("هذا الكود موجود مسبقاً!"); return; }
+            (sys === 'LS' ? dataLS : dataSB)[k].push(full); 
+            render(sys); 
+        } 
+    }
     function changeRepNum(sys) { let n = prompt("الرقم:"); if(n) { config[sys].rep = n; render(sys); } }
-    function resetSys(sys) { if(confirm("تصفير؟")) location.reload(); }
+    function resetSys(sys) { if(confirm("تصفير؟")) { localStorage.removeItem(config[sys].storageKey); location.reload(); } }
     function undo(sys) { if(config[sys].history.length) { let last = config[sys].history.pop(); (sys==='LS'?dataLS:dataSB)[last.target].pop(); render(sys); } }
 
     ['LS', 'SB'].forEach(sys => {
@@ -217,6 +273,13 @@
             };
             document.getElementById(`letters${sys}`).appendChild(b);
         });
+        const saved = JSON.parse(localStorage.getItem(config[sys].storageKey));
+        if(saved) { 
+            if(sys==='LS') dataLS = saved.data; else dataSB = saved.data; 
+            config[sys].rep = saved.rep || 1; 
+            config[sys].digits = saved.digits || 3;
+            document.getElementById(`digitBtn${sys}`).innerText = config[sys].digits + " أرقام";
+        }
     });
 
     setInterval(() => { document.querySelectorAll('.clock').forEach(c => c.innerText = new Date().toLocaleTimeString('en-GB')); }, 1000);
