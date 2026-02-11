@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>EMS System - Professional Version</title>
+    <title>EMS System - Professional Filtering</title>
     <style>
         :root { --red: #b32633; --blue: #0056b3; --gold: #ffd700; --bg: #0a0a0a; --purple: #6a1b9a; --white: #ffffff; }
         body { font-family: 'Segoe UI', sans-serif; background: #111 url('https://i.top4top.io/p_3592jzcr01.jpg') no-repeat center center fixed; background-size: cover; color: white; margin: 0; padding: 10px; padding-bottom: 120px; }
@@ -19,26 +19,23 @@
         .active-ls { background: var(--red) !important; border-color: white !important; }
         .active-sb { background: var(--blue) !important; border-color: white !important; }
         .main-input { font-size: 50px; width: 180px; text-align: center; background: #000; border: 2px solid #555; border-radius: 15px; padding: 10px; color: white; }
-        
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px; }
-        .card { background: rgba(0,0,0,0.8); border: 1px solid #444; border-radius: 12px; overflow: visible; min-height: 140px; position: relative; } 
+        .card { background: rgba(0,0,0,0.8); border: 1px solid #444; border-radius: 12px; min-height: 140px; position: relative; } 
         .card-header { padding: 12px; text-align: center; font-weight: bold; font-size: 18px; border-radius: 12px 12px 0 0; } 
-        
         .ls-header { background: var(--red); }
         .sb-header { background: var(--blue); }
         .card-purple .card-header { background: var(--purple) !important; }
         .card-white .card-header { background: var(--white) !important; color: black; }
         .card-body { padding: 15px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; min-height: 60px; }
-        
         .tag { background: #000; border: 1px solid #444; padding: 8px 12px; border-radius: 6px; font-weight: bold; position: relative; cursor: pointer; font-size: 14px; }
-        .tag-menu { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: #1a1a1a; z-index: 9999; border: 1px solid #555; width: 120px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); border-radius: 5px; }
+        .tag-menu { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: #1a1a1a; z-index: 9999; border: 1px solid #555; width: 120px; border-radius: 5px; }
         .tag:hover .tag-menu { display: block; }
-        .tag-menu div { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; text-align: center; color: white; font-size: 13px; }
-        .tag-menu div:hover { background: #333; }
-        .tag-menu div:last-child { border-bottom: none; color: #ff4444; }
-
+        .tag-menu div { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; text-align: center; color: white; }
+        .tag-menu div:last-child { color: #ff4444; }
         .bottom-actions { position: fixed; bottom: 0; left: 0; right: 0; background: #050505; padding: 20px; display: flex; justify-content: center; border-top: 3px solid #444; gap: 20px; z-index: 1000; }
         .btn-side { padding: 10px 15px; background: #333; color: white; border-radius: 8px; cursor: pointer; border: 1px solid #555; font-weight: bold; }
+        .import-box { width: 100%; max-width: 600px; background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 12px; border: 1px solid #444; margin-bottom: 10px; }
+        .import-area { width: 100%; height: 80px; background: #000; color: #2ecc71; border: 1px solid #555; border-radius: 8px; padding: 10px; font-size: 12px; resize: none; margin-bottom: 10px; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -51,12 +48,16 @@
 
     <div id="systemLS" class="system-container active">
         <div class="info-bar" style="border-color: var(--red);">
-            <div>تقرير LS رقم: <span id="repNumLS" onclick="changeRepNum('LS')" style="color:var(--gold); cursor:pointer;">1 | 2 | 3</span></div>
+            <div>تقرير LS رقم: <span id="repNumLS" onclick="changeRepNum('LS')" style="color:var(--gold); cursor:pointer;">1</span></div>
             <div id="clockLS" style="color:var(--gold); font-weight:bold;">00:00</div>
         </div>
         <div class="main-controls">
+            <div class="import-box">
+                <textarea id="importAreaLS" class="import-area" placeholder="لصق تقرير LS للاستيراد..."></textarea>
+                <button class="btn-side" style="width:100%; background:#2980b9;" onclick="importReport('LS')">📥 استيراد الوحدات إلى LS</button>
+            </div>
             <div style="display:flex; gap:10px;">
-                <button class="btn-side" style="background:#27ae60;" onclick="randomize('LS')">🔄 عشوائي (ميداني)</button>
+                <button class="btn-side" style="background:#27ae60;" onclick="randomize('LS')">🔄 عشوائي الميدان</button>
                 <button class="btn-side" style="background:#600;" onclick="resetSys('LS')">⚠️ تصفير LS</button>
             </div>
             <div id="lettersLS" class="letter-group" style="display:flex; gap:5px;"></div>
@@ -81,12 +82,16 @@
 
     <div id="systemSB" class="system-container">
         <div class="info-bar" style="border-color: var(--blue);">
-            <div>تقرير SB رقم: <span id="repNumSB" onclick="changeRepNum('SB')" style="color:var(--gold); cursor:pointer;">1 | 2 | 3</span></div>
+            <div>تقرير SB رقم: <span id="repNumSB" onclick="changeRepNum('SB')" style="color:var(--gold); cursor:pointer;">1</span></div>
             <div id="clockSB" style="color:var(--gold); font-weight:bold;">00:00</div>
         </div>
         <div class="main-controls">
+            <div class="import-box">
+                <textarea id="importAreaSB" class="import-area" placeholder="لصق تقرير ساندي للاستيراد..."></textarea>
+                <button class="btn-side" style="width:100%; background:#2980b9;" onclick="importReport('SB')">📥 استيراد الوحدات إلى SB</button>
+            </div>
             <div style="display:flex; gap:10px;">
-                <button class="btn-side" style="background:#27ae60;" onclick="randomize('SB')">🔄 عشوائي (ميداني)</button>
+                <button class="btn-side" style="background:#27ae60;" onclick="randomize('SB')">🔄 عشوائي الميدان</button>
                 <button class="btn-side" style="background:#600;" onclick="resetSys('SB')">⚠️ تصفير SB</button>
             </div>
             <div id="lettersSB" class="letter-group" style="display:flex; gap:5px;"></div>
@@ -117,8 +122,8 @@
 <script>
     let currentSystem = 'LS';
     const config = { 
-        LS: { let: 'E', dig: 3, hist: [], storage: 'EMS_DATA_LS_PRO' }, 
-        SB: { let: 'E', dig: 3, hist: [], storage: 'EMS_DATA_SB_PRO' } 
+        LS: { let: 'E', dig: 3, hist: [], storage: 'DATA_LS_FINAL_V9' }, 
+        SB: { let: 'E', dig: 3, hist: [], storage: 'DATA_SB_FINAL_V9' } 
     };
 
     let dataLS = { "القيادة":[], "اشراف عام":[], "مشرف ميداني":[], "العمليات":[], "نائب العمليات":[], "لام 1":[], "لام 2":[], "لام 3":[], "لام 4":[], "لام 5":[], "فرسان":[], "دعم":[], "الميناء":[], "وحدات البحث و الانقاذ":[], "تسجيل الخروج":[] };
@@ -130,12 +135,12 @@
         if (el.value.length >= limit) {
             let code = config[sys].let + "-" + el.value;
             let d = (sys === 'LS' ? dataLS : dataSB);
-            let exists = false;
-            for(let k in d) if(d[k].includes(code)) exists = true;
-            if(exists) { alert("⚠️ الكود مكرر!"); el.value = ''; return; }
+            for(let k in d) if(d[k].includes(code)) { alert("⚠️ الكود مكرر!"); el.value = ''; return; }
+            
             let target = (d["العمليات"].length === 0) ? "العمليات" : (d["نائب العمليات"].length === 0 ? "نائب العمليات" : (sys === 'LS' ? logicLS(d) : logicSB(d)));
+            
             d[target].push(code);
-            config[sys].hist.push({t: target, c: code});
+            config[sys].hist.push({sys: sys, t: target, c: code});
             el.value = ''; render(sys);
         }
     }
@@ -160,99 +165,107 @@
 
     function render(sys) {
         const d = (sys === 'LS' ? dataLS : dataSB);
-        const fK = (sys === 'LS') ? ["العمليات", "نائب العمليات", "لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["العمليات", "نائب العمليات", "سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"];
-        const aK = ["القيادة", "اشراف عام", "مشرف ميداني", "وحدات البحث و الانقاذ", "الميناء", "دعم"];
+        const fKeys = (sys === 'LS') ? ["العمليات", "نائب العمليات", "لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان"] : ["العمليات", "نائب العمليات", "سين 1", "باء 1", "سين", "جيم 1", "باء", "جيم 2"];
+        const aKeys = ["القيادة", "اشراف عام", "مشرف ميداني", "وحدات البحث و الانقاذ", "الميناء", "دعم"];
         const draw = (k) => {
             let cl = ["القيادة","اشراف عام","مشرف ميداني"].includes(k) ? 'card-purple' : (["وحدات البحث و الانقاذ","الميناء","دعم"].includes(k) ? 'card-white' : '');
-            let tags = d[k].map((u, i) => `<div class="tag">${u}<div class="tag-menu">` + 
-                (k !== "تسجيل الخروج" ? `<div onclick="moveOut('${sys}','${k}',${i})">➡️ خروج</div>` : "") + 
-                `<div onclick="delUnit('${sys}','${k}',${i})">❌ حذف</div></div></div>`).join('');
+            let tags = d[k].map((u, i) => `<div class="tag">${u}<div class="tag-menu"><div onclick="moveOut('${sys}','${k}',${i})">➡️ خروج</div><div onclick="delUnit('${sys}','${k}',${i})">❌ حذف</div></div></div>`).join('');
             return `<div class="card ${cl}"><div class="card-header ${(sys==='LS'?'ls-header':'sb-header')}">${k}</div><div class="card-body">${tags}</div></div>`;
         };
-        document.getElementById(`gridField${sys}`).innerHTML = fK.map(draw).join('');
-        document.getElementById(`gridAdmin${sys}`).innerHTML = aK.map(draw).join('');
+        document.getElementById(`gridField${sys}`).innerHTML = fKeys.map(draw).join('');
+        document.getElementById(`gridAdmin${sys}`).innerHTML = aKeys.map(draw).join('');
         document.getElementById(`gridExit${sys}`).innerHTML = draw("تسجيل الخروج");
         localStorage.setItem(config[sys].storage, JSON.stringify(d));
     }
 
-    function moveOut(sys, k, i) { (sys==='LS'?dataLS:dataSB)["تسجيل الخروج"].push((sys==='LS'?dataLS:dataSB)[k].splice(i, 1)[0]); rebalance(sys); }
-    function delUnit(sys, k, i) { (sys==='LS'?dataLS:dataSB)[k].splice(i, 1); if (k === "تسجيل الخروج") render(sys); else rebalance(sys); }
-    function rebalance(sys) {
+    function rebalanceFieldOnly(sys, keyDeleted) {
         let d = (sys==='LS'?dataLS:dataSB); 
-        let ks = (sys==='LS') ? ["لام 1","لام 2","لام 3","لام 4","لام 5","فرسان"] : ["سين 1","باء 1","سين","جيم 1","باء","جيم 2"];
-        let pool = []; ks.forEach(k => { pool.push(...d[k]); d[k]=[]; });
-        pool.forEach(c => { let t = (sys==='LS'?logicLS(d):logicSB(d)); d[t].push(c); });
+        let fieldKeys = (sys==='LS') ? ["لام 1","لام 2","لام 3","لام 4","لام 5","فرسان"] : ["سين 1","باء 1","سين","جيم 1","باء","جيم 2"];
+        if(fieldKeys.includes(keyDeleted)) {
+            let pool = []; 
+            fieldKeys.forEach(k => { pool.push(...d[k]); d[k]=[]; });
+            pool.forEach(c => { d[(sys==='LS'?logicLS(d):logicSB(d))].push(c); });
+        }
         render(sys);
     }
+
+    function moveOut(sys, k, i) { let d = (sys==='LS'?dataLS:dataSB); d["تسجيل الخروج"].push(d[k].splice(i, 1)[0]); rebalanceFieldOnly(sys, k); }
+    function delUnit(sys, k, i) { let d = (sys==='LS'?dataLS:dataSB); d[k].splice(i, 1); rebalanceFieldOnly(sys, k); }
+
+    // التحديث: فلترة E-000 أثناء الاستيراد
+    function importReport(sys) {
+        let text = document.getElementById(`importArea${sys}`).value;
+        if(!text.trim()) return;
+        let d = (sys === 'LS' ? dataLS : dataSB);
+        for(let key in d) d[key] = [];
+        let sections = text.split(/\n(?=[أ-ي])/); 
+        sections.forEach(section => {
+            let header = section.split('\n')[0].split(':')[0].trim();
+            if(header === "تسجيل خروج") header = "تسجيل الخروج";
+            if(d[header]) {
+                let matches = section.match(/[A-Z]-\d{2,4}/g);
+                if(matches) {
+                    matches.forEach(code => { 
+                        // شرط الفلترة: تجاهل الكود إذا كان يحتوي على 000
+                        if(!code.includes("000") && !d[header].includes(code)) {
+                            d[header].push(code); 
+                        }
+                    });
+                }
+            }
+        });
+        document.getElementById(`importArea${sys}`).value = "";
+        render(sys);
+    }
+
     function randomize(sys) {
         let d = (sys==='LS'?dataLS:dataSB);
         let ks = (sys==='LS') ? ["لام 1","لام 2","لام 3","لام 4","لام 5","فرسان"] : ["سين 1","باء 1","سين","جيم 1","باء","جيم 2"];
         let pool = []; ks.forEach(k => { pool.push(...d[k]); d[k]=[]; });
         pool.sort(() => Math.random() - 0.5);
-        pool.forEach(c => { let t = (sys==='LS'?logicLS(d):logicSB(d)); d[t].push(c); });
+        pool.forEach(c => { d[(sys==='LS'?logicLS(d):logicSB(d))].push(c); });
         render(sys);
     }
+
     function manualAdd(sys, k) { let n = prompt("رقم الكود:"); if(n) { let full = config[sys].let + "-" + n.replace(/[^0-9]/g, ''); (sys === 'LS' ? dataLS : dataSB)[k].push(full); render(sys); } }
     function undo(sys) { if(config[sys].hist.length){ let l=config[sys].hist.pop(); (sys==='LS'?dataLS:dataSB)[l.t].pop(); render(sys); } }
-    function resetSys(sys) { if(confirm("تصفير بيانات المدينة؟")){ localStorage.removeItem(config[sys].storage); location.reload(); } }
     function switchSystem(sys) { currentSystem = sys; document.querySelectorAll('.system-container').forEach(c => c.classList.remove('active')); document.getElementById(`system${sys}`).classList.add('active'); document.getElementById('lsTabBtn').classList.toggle('active', sys==='LS'); document.getElementById('sbTabBtn').classList.toggle('active', sys==='SB'); }
     function toggleDigits(sys) { config[sys].dig = (config[sys].dig===3?4:3); document.getElementById(`digitBtn${sys}`).innerText = config[sys].dig + " أرقام"; }
     function changeRepNum(sys) { let n = prompt("رقم التقرير:"); if(n) document.getElementById(`repNum${sys}`).innerText = n; }
+    function resetSys(sys) { if(confirm("تصفير بيانات المدينة؟")){ localStorage.removeItem(config[sys].storage); location.reload(); } }
 
-    // نسخ التقرير بالصيغة المطلوبة
     function copyAction() {
         const sys = currentSystem; 
         const d = (sys === 'LS' ? dataLS : dataSB);
         const r = document.getElementById(`repNum${sys}`).innerText;
         const now = new Date();
         const days = ["الأحد","الأثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
-        
-        // توقيت السعودية ص/م
         const ksaTimeStr = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Riyadh', hour: '2-digit', minute: '2-digit', hour12: true }).replace('AM', 'ص').replace('PM', 'م');
-        const ksaDateStr = now.toLocaleDateString('en-GB', { timeZone: 'Asia/Riyadh' }).split('/').reverse().join('/'); // YYYY/MM/DD
-        
+        const ksaDateStr = now.toLocaleDateString('en-GB', { timeZone: 'Asia/Riyadh' }).split('/').reverse().join('/'); 
         let header = `تم تحديث تقرير عمليات  ( ${sys === 'LS' ? 'لوس سانتوس' : 'ساندي و بوليتو'} ) رقم ( ${r} )  في تمام الساعه  (${ksaTimeStr} )  في يوم ( ${days[now.getDay()]} ) التاريخ ${ksaDateStr}\n\n`;
-        
-        const order = (sys === 'LS') ? 
-            ["القيادة", "اشراف عام", "مشرف ميداني", "العمليات", "نائب العمليات", "لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان", "دعم", "الميناء", "وحدات البحث و الانقاذ", "تسجيل الخروج"] : 
-            ["القيادة", "اشراف عام", "مشرف ميداني", "العمليات", "نائب العمليات", "سين 1", "سين", "باء 1", "باء", "جيم 1", "جيم 2", "دعم", "الميناء", "وحدات البحث و الانقاذ", "تسجيل الخروج"];
-
+        const order = (sys === 'LS') ? ["القيادة", "اشراف عام", "مشرف ميداني", "العمليات", "نائب العمليات", "لام 1", "لام 2", "لام 3", "لام 4", "لام 5", "فرسان", "دعم", "الميناء", "وحدات البحث و الانقاذ", "تسجيل الخروج"] : ["القيادة", "اشراف عام", "مشرف ميداني", "العمليات", "نائب العمليات", "سين 1", "سين", "باء 1", "باء", "جيم 1", "جيم 2", "دعم", "الميناء", "وحدات البحث و الانقاذ", "تسجيل الخروج"];
         let body = "";
         order.forEach(k => {
             let label = (k === "تسجيل الخروج") ? "تسجيل خروج" : k;
-            let units = "";
-            if (d[k] && d[k].length > 0) {
-                if (k.includes("العمليات")) {
-                    units = d[k].join(" | ") + " |";
-                } else {
-                    units = d[k].join("\n");
-                }
-            } else {
-                units = (k.includes("العمليات")) ? "E-000 |" : "E-000";
-            }
+            let units = (d[k] && d[k].length > 0) ? (k.includes("العمليات") ? d[k].join(" | ") + " |" : d[k].join("\n")) : (k.includes("العمليات") ? "E-000 |" : "E-000");
             body += `${label} :\n${units}\n\n`;
         });
-
-        navigator.clipboard.writeText(header + body).then(() => alert("✅ تم النسخ بالصيغة المطلوبة"));
+        navigator.clipboard.writeText(header + body).then(() => alert("✅ تم النسخ"));
     }
 
-    // تهيئة الأحرف
     ['LS','SB'].forEach(sys => {
         ['E','A','F','M','S','C','G','P','H','R'].forEach(l => {
             let b = document.createElement('button'); b.className = 'let-btn' + (l === 'E' ? ` active-${sys.toLowerCase()}` : ''); b.innerText = l;
             b.onclick = () => { config[sys].let = l; document.querySelectorAll(`#letters${sys} .let-btn`).forEach(x => x.classList.remove(`active-ls`,`active-sb`)); b.classList.add(`active-${sys.toLowerCase()}`); };
             document.getElementById(`letters${sys}`).appendChild(b);
         });
-        const saved = JSON.parse(localStorage.getItem(config[sys].storage)); if(saved) { if(sys==='LS') dataLS = saved; else dataSB = saved; }
+        const saved = JSON.parse(localStorage.getItem(config[sys].storage)); if(saved) { if(sys === 'LS') dataLS = saved; else dataSB = saved; }
     });
     
-    // ساعة النظام العلوية (إنجليزي 24 ساعة)
     setInterval(() => { 
         let t = new Date().toLocaleTimeString('en-GB', { timeZone: 'Asia/Riyadh', hour: '2-digit', minute: '2-digit', hour12: false });
-        document.getElementById('clockLS').innerText = t; 
-        document.getElementById('clockSB').innerText = t; 
+        document.getElementById('clockLS').innerText = t; document.getElementById('clockSB').innerText = t; 
     }, 1000);
-    
     render('LS'); render('SB');
 </script>
 </body>
